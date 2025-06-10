@@ -43,12 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studyhubapp.R
+import com.example.studyhubapp.viewModel.AppViewModel
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun MainPageUI(modifier: Modifier = Modifier) {
+fun MainPageUI(viewModel: AppViewModel) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val searchBarText by rememberSaveable { mutableStateOf("") }
     val textFieldState = rememberTextFieldState()
     Scaffold(topBar = {
         TopAppBar(
@@ -59,7 +59,6 @@ fun MainPageUI(modifier: Modifier = Modifier) {
         )
     }, bottomBar = {
         BottomAppBar(
-            containerColor = Color.Transparent,
             tonalElevation = 2.dp,
             content = {
                 AppButton(icon = R.drawable.new_folder)
@@ -78,7 +77,7 @@ fun MainPageUI(modifier: Modifier = Modifier) {
                 onSearch = { /* implement search logic here */ },
                 searchResults = emptyList(), // or your actual list of results
             )
-            FolderRow(R.drawable.folder_icon, textVal = "Quick Notes", noOfNotes = "0")
+            FolderRow(R.drawable.folder_icon, textVal = "Quick Note", noOfNotes = "0")
             FolderRow(R.drawable.shared_folder, textVal = "Shared notes", noOfNotes = "0")
             FolderRow(R.drawable.deleted_folder, textVal = "Recently Deleted", noOfNotes = "0")
             Spacer(modifier = Modifier.weight(1f))
