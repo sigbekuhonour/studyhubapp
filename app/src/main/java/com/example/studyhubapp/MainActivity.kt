@@ -11,10 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.studyhubapp.component.MainPageUI
 import com.example.studyhubapp.navigation.AppNav
 import com.example.studyhubapp.theme.StudyHubAppTheme
-import com.example.studyhubapp.viewmodel.AppViewModel
+import com.example.studyhubapp.ui.AppViewModel
+import com.example.studyhubapp.ui.MainPageUI
 
 class MainActivity : ComponentActivity() {
 

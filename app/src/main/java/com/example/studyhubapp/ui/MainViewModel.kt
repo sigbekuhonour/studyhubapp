@@ -1,4 +1,4 @@
-package com.example.studyhubapp.viewmodel
+package com.example.studyhubapp.ui
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList

@@ -1,4 +1,4 @@
-package com.example.studyhubapp.component
+package com.example.studyhubapp.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.studyhubapp.R
-import com.example.studyhubapp.component.element.ActionsComp
-import com.example.studyhubapp.component.element.AppButton
-import com.example.studyhubapp.component.element.SimpleSearchBar
+import com.example.studyhubapp.component.button.AppButton
 import com.example.studyhubapp.component.notefolder.FolderRow
-import com.example.studyhubapp.viewmodel.AppViewModel
+import com.example.studyhubapp.component.searchbar.ActionsComp
+import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)

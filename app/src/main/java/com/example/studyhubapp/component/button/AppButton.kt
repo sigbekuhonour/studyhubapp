@@ -1,4 +1,4 @@
-package com.example.studyhubapp.component.element
+package com.example.studyhubapp.component.button
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton

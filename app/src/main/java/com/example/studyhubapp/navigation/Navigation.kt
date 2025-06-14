@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.studyhubapp.component.MainPageUI
-import com.example.studyhubapp.viewmodel.AppViewModel
+import com.example.studyhubapp.ui.AppViewModel
+import com.example.studyhubapp.ui.MainPageUI
 
 @Composable
 fun AppNav(modifier: Modifier, viewModel: AppViewModel) {
