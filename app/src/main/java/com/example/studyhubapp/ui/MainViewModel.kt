@@ -1,23 +1,11 @@
 package com.example.studyhubapp.ui
 
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import com.example.studyhubapp.component.note.Note
+import com.example.studyhubapp.component.notefolder.NoteFolder
 import java.util.UUID
 
-
-data class NoteFolder(
-    val id: Int,
-    val name: String,
-    val listOfNotes: SnapshotStateList<Note> = mutableStateListOf()
-)
-
-data class Note(
-    val id: Int,
-    val folderId: Int?,
-    val title: String,
-    val content: String?
-)
 
 class AppViewModel : ViewModel() {
     //main functions include the following
