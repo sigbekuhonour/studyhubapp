@@ -13,6 +13,6 @@ fun AppNav(modifier: Modifier, viewModel: AppViewModel) {
     ///nav controller
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "LandingPage") {
-        composable("LandingPage") { MainPageUI(viewModel = viewModel) }
+        composable("LandingPage") { MainPageUI(viewModel = viewModel) }//
     }
 }

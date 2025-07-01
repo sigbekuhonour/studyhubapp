@@ -15,6 +15,9 @@ class AppViewModel : ViewModel() {
 
     //add folder
     fun addFolder(name: String) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//
+//        }
         val folderId = UUID.randomUUID().hashCode()
         _folders.add(NoteFolder(id = folderId, name = name))
     }

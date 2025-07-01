@@ -1,0 +1,11 @@
+package com.example.studyhubapp.component.notefolder
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+@Composable
+fun NoteFolderNameText(folderName: String, modifier: Modifier = Modifier) {
+    Text(text = folderName, modifier = modifier, color = MaterialTheme.colorScheme.onPrimary)
+}
