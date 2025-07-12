@@ -13,7 +13,7 @@ val provider = GoogleFont.Provider(
     providerPackage = "com.google.android.gms",
     certificates = R.array.com_google_android_gms_fonts_certs
 )
-val fontName = GoogleFont("Roboto")
+val fontName = GoogleFont("Raleway")
 
 val displayFontFamily = FontFamily(
     Font(googleFont = fontName, fontProvider = provider)

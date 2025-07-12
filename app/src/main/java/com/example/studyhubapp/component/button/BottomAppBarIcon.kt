@@ -8,11 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 
 @Composable
-fun BottomAppBarIcon(modifier: Modifier = Modifier, icon: Int) {
+fun BottomAppBarIcon(modifier: Modifier = Modifier, icon: Int, onClick: () -> Unit = {}) {
     Icon(
         painter = painterResource(id = icon),
         tint = MaterialTheme.colorScheme.scrim,
-        modifier = Modifier.clickable {},
+        modifier = Modifier.clickable { onClick() },
         contentDescription = null
     )
 }

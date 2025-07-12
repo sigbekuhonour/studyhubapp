@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.button.BottomAppBarIcon
+import com.example.studyhubapp.component.notefolder.AddFolderDialog
 import com.example.studyhubapp.component.notefolder.FolderRow
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 
@@ -38,6 +39,7 @@ import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 @OptIn(ExperimentalMaterial3Api::class)
 fun NoteFolderScreen(viewModel: AppViewModel) {
     var lazyColumnState = rememberLazyListState()
+    var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }
     var actionText by rememberSaveable { mutableStateOf("") }
     if (isEnabled) {
@@ -81,7 +83,9 @@ fun NoteFolderScreen(viewModel: AppViewModel) {
                 tonalElevation = 2.dp,
                 containerColor = MaterialTheme.colorScheme.onPrimary,
                 content = {
-                    BottomAppBarIcon(icon = R.drawable.new_folder)
+                    BottomAppBarIcon(
+                        icon = R.drawable.new_folder,
+                        onClick = { newFolderButtonIsClicked = !newFolderButtonIsClicked })
                     Spacer(modifier = Modifier.weight(1f))
                     BottomAppBarIcon(icon = R.drawable.new_notes)
                 }
@@ -93,7 +97,7 @@ fun NoteFolderScreen(viewModel: AppViewModel) {
                 .padding(horizontal = 5.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            //you've got work here boy
+            //implemented search bar to search through the folders list in viewmodel
             SimpleSearchBar(
                 textFieldState = textFieldState,
                 searchResults = searchResults,
@@ -102,7 +106,14 @@ fun NoteFolderScreen(viewModel: AppViewModel) {
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
                 onSearch = {})
-            
+            if (newFolderButtonIsClicked) {
+                AddFolderDialog(
+                    onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
+                    onConfirm = { newFolderName ->
+                        viewModel.addFolder(newFolderName)
+                    }
+                )
+            }
             LazyColumn(
                 state = lazyColumnState,
                 verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -113,7 +124,8 @@ fun NoteFolderScreen(viewModel: AppViewModel) {
                         icon = eachFolder.icon,
                         textVal = eachFolder.name,
                         noOfNotes = eachFolder.listOfNotes.size,
-                        isEnabled = isEnabled
+                        isEnabled = isEnabled,
+                        onDeleteClick = { viewModel.deleteFolder(eachFolder.name) }
                     )
                 }
 
