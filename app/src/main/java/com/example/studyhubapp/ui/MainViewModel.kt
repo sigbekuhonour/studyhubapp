@@ -2,28 +2,38 @@ package com.example.studyhubapp.ui
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.example.studyhubapp.R
 import com.example.studyhubapp.component.note.Note
 import com.example.studyhubapp.component.notefolder.NoteFolder
-import java.util.UUID
 
 
 class AppViewModel : ViewModel() {
     //main functions include the following
     //it would be key to have a mutable list of folders
-    private val _folders = mutableStateListOf<NoteFolder>()
+    private val _folders = mutableStateListOf<NoteFolder>(
+        NoteFolder(id = 0, icon = R.drawable.folder_icon, name = "Quick Notes"),
+        NoteFolder(id = 1, icon = R.drawable.shared_folder, name = "Shared Notes"),
+        NoteFolder(id = 2, icon = R.drawable.deleted_folder, name = "Recently Deleted")
+    )
+
+    private val _recentlyDeletedFolder = mutableStateListOf<NoteFolder>()
     val folders: List<NoteFolder> get() = _folders
 
     //add folder
     fun addFolder(name: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//
-//        }
-        val folderId = UUID.randomUUID().hashCode()
+        val folderId = _folders.size
         _folders.add(NoteFolder(id = folderId, name = name))
     }
 
     //delete folder
     fun deleteFolder(name: String) {
+        //add to recently deleted first before deleting
+        val folderId = _recentlyDeletedFolder.size
+        val folderToAddNote = _folders.find { (it.name) == name }
+        if (folderToAddNote != null) {
+            _recentlyDeletedFolder.add(NoteFolder(id = folderId, name = folderToAddNote.name))
+        }
+
         _folders.removeIf { it.name == name }
     }
 
@@ -34,10 +44,10 @@ class AppViewModel : ViewModel() {
         val noteId = (folderToAddNote?.listOfNotes?.size?.plus(1) ?: 0)
         folderToAddNote?.listOfNotes?.add(
             Note(
-                id = noteId,
                 folderId = folderToAddNoteId,
                 title = title,
-                content = content
+                content = content,
+                id = noteId
             )
         )
     }
@@ -48,3 +58,4 @@ class AppViewModel : ViewModel() {
         folderToDeleteNote?.listOfNotes?.removeIf { it.id == noteId }
     }
 }
+

@@ -1,47 +1,66 @@
 package com.example.studyhubapp.component.notefolder
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.studyhubapp.R
 import com.example.studyhubapp.component.note.Note
 
 
 data class NoteFolder(
     val id: Int,
+    val icon: Int = R.drawable.folder_icon,
     val name: String,
     val listOfNotes: SnapshotStateList<Note> = mutableStateListOf()
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FolderRow(icon: Int, textVal: String, noOfNotes: String) {
-    Button(
-        onClick = {},
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.inverseSurface
-        ),
-        modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.inverseSurface)
-            .fillMaxWidth()
-    ) {
-        Row(horizontalArrangement = Arrangement.Start) {
-            NoteFolderIcon(icon)
-            NoteFolderNameText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
-            Spacer(modifier = Modifier.weight(1f))
-            NoteFolderNameText(folderName = noOfNotes)
-        }
+fun FolderRow(icon: Int, textVal: String, noOfNotes: Int, isEnabled: Boolean) {
 
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable(enabled = !isEnabled) {}
+            .background(color = MaterialTheme.colorScheme.inverseSurface)
+            .height(40.dp)
+            .border(
+                width = 2.dp,
+                brush = SolidColor(value = MaterialTheme.colorScheme.inverseOnSurface),
+                shape = MaterialTheme.shapes.small
+            )
+            .padding(horizontal = 5.dp)
+    ) {
+        NoteFolderIcon(icon)
+        NoteFolderNameText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
+        Spacer(modifier = Modifier.weight(1f))
+        if (!isEnabled) {
+            NoteFolderNameText(folderName = noOfNotes.toString())
+        } else {
+            Icon(
+                painter = painterResource(id = R.drawable.delete_icon),
+                modifier = Modifier.clickable {},
+                tint = MaterialTheme.colorScheme.scrim,
+                contentDescription = ""
+            )
+        }
     }
 }
+

@@ -14,7 +14,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.studyhubapp.navigation.AppNav
 import com.example.studyhubapp.theme.StudyHubAppTheme
 import com.example.studyhubapp.ui.AppViewModel
-import com.example.studyhubapp.ui.MainPageUI
+import com.example.studyhubapp.ui.NoteFolderScreen
+
 
 class MainActivity : ComponentActivity() {
 
@@ -38,6 +39,6 @@ class MainActivity : ComponentActivity() {
 fun GreetingPreview() {
     val viewModel: AppViewModel = viewModel()
     StudyHubAppTheme {
-        MainPageUI(viewModel = viewModel)
+        NoteFolderScreen(viewModel = viewModel)
     }
 }

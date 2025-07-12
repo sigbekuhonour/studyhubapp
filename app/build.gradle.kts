@@ -39,8 +39,11 @@ android {
     }
 }
 
+
 dependencies {
     val nav_version = "2.9.0"
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.9")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
@@ -59,4 +62,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(kotlin("test"))
 }
