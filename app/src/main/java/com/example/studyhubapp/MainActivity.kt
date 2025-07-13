@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.studyhubapp.navigation.AppNav
 import com.example.studyhubapp.theme.StudyHubAppTheme
-import com.example.studyhubapp.ui.NoteFolderScreen
+import com.example.studyhubapp.ui.notefolder.NoteFolderDetailScreen
 import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
 
@@ -38,6 +38,6 @@ class MainActivity : ComponentActivity() {
 fun GreetingPreview() {
     val viewModel: NoteFolderViewModel = viewModel()
     StudyHubAppTheme {
-        NoteFolderScreen(viewModel = viewModel)
+        NoteFolderDetailScreen(viewModel = viewModel)
     }
 }

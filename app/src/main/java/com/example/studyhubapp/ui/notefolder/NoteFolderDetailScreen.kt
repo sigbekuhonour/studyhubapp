@@ -1,4 +1,4 @@
-package com.example.studyhubapp.ui
+package com.example.studyhubapp.ui.notefolder
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,14 +31,11 @@ import androidx.compose.ui.unit.sp
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
-import com.example.studyhubapp.ui.notefolder.CreateNewFolderDialog
-import com.example.studyhubapp.ui.notefolder.FolderRow
-import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun NoteFolderScreen(viewModel: NoteFolderViewModel) {
+fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel) {
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }

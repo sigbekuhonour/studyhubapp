@@ -6,18 +6,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.studyhubapp.ui.NoteFolderScreen
+import com.example.studyhubapp.ui.notefolder.NoteFolderDetailScreen
 import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
 
 @Composable
-fun AppNav(modifier: Modifier, viewModel: NoteFolderViewModel) {
+fun AppNav(modifier: Modifier) {
     ///nav controller
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "LandingPage") {
         composable("LandingPage") {
             val viewModel: NoteFolderViewModel = viewModel()
-            NoteFolderScreen(viewModel = viewModel)
+            NoteFolderDetailScreen(viewModel = viewModel)
         }//
     }
 }
