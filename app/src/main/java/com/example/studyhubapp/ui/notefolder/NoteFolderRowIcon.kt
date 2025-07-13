@@ -9,7 +9,7 @@ import androidx.compose.ui.res.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteFolderIcon(id: Int, modifier: Modifier = Modifier) {
+fun NoteFolderRowIcon(id: Int, modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(id = id),
         tint = MaterialTheme.colorScheme.scrim,

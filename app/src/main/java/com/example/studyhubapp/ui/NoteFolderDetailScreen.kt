@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
-import com.example.studyhubapp.ui.notefolder.CreateNewFolderDialogScreen
+import com.example.studyhubapp.ui.notefolder.CreateNewFolderDialog
 import com.example.studyhubapp.ui.notefolder.FolderRow
 import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
@@ -108,7 +108,7 @@ fun NoteFolderScreen(viewModel: NoteFolderViewModel) {
                     .padding(horizontal = 10.dp),
                 onSearch = {})
             if (newFolderButtonIsClicked) {
-                CreateNewFolderDialogScreen(
+                CreateNewFolderDialog(
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
                     onConfirm = { newFolderName ->
                         viewModel.addFolder(newFolderName)

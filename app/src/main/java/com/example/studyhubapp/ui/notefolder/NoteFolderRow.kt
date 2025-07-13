@@ -43,11 +43,11 @@ fun FolderRow(
             )
             .padding(horizontal = 15.dp)
     ) {
-        NoteFolderIcon(icon)
-        NoteFolderNameText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
+        NoteFolderRowIcon(icon)
+        NoteFolderRowNameText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
         Spacer(modifier = Modifier.weight(1f))
         if (!isEnabled) {
-            NoteFolderNameText(folderName = noOfNotes.toString())
+            NoteFolderRowNameText(folderName = noOfNotes.toString())
         } else {
             Icon(
                 painter = painterResource(id = R.drawable.delete_icon),

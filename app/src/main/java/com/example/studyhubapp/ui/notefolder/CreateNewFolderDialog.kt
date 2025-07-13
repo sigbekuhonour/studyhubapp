@@ -17,7 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun CreateNewFolderDialogScreen(
+fun CreateNewFolderDialog(
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
