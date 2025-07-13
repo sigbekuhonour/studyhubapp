@@ -29,15 +29,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.studyhubapp.R
-import com.example.studyhubapp.component.button.BottomAppBarIcon
-import com.example.studyhubapp.component.notefolder.AddFolderDialog
-import com.example.studyhubapp.component.notefolder.FolderRow
+import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
+import com.example.studyhubapp.ui.notefolder.CreateNewFolderDialogScreen
+import com.example.studyhubapp.ui.notefolder.FolderRow
+import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun NoteFolderScreen(viewModel: AppViewModel) {
+fun NoteFolderScreen(viewModel: NoteFolderViewModel) {
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }
@@ -107,7 +108,7 @@ fun NoteFolderScreen(viewModel: AppViewModel) {
                     .padding(horizontal = 10.dp),
                 onSearch = {})
             if (newFolderButtonIsClicked) {
-                AddFolderDialog(
+                CreateNewFolderDialogScreen(
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
                     onConfirm = { newFolderName ->
                         viewModel.addFolder(newFolderName)

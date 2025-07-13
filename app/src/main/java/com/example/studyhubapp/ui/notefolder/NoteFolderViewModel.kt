@@ -1,13 +1,11 @@
-package com.example.studyhubapp.ui
+package com.example.studyhubapp.ui.notefolder
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.studyhubapp.R
-import com.example.studyhubapp.component.note.Note
-import com.example.studyhubapp.component.notefolder.NoteFolder
+import com.example.studyhubapp.ui.note.Note
 
-
-class AppViewModel : ViewModel() {
+class NoteFolderViewModel : ViewModel() {
     //main functions include the following
     //it would be key to have a mutable list of folders
     private val _folders = mutableStateListOf<NoteFolder>(
@@ -58,4 +56,3 @@ class AppViewModel : ViewModel() {
         folderToDeleteNote?.listOfNotes?.removeIf { it.id == noteId }
     }
 }
-

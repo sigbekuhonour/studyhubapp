@@ -1,4 +1,4 @@
-package com.example.studyhubapp.component.note
+package com.example.studyhubapp.ui.note
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -7,7 +7,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.studyhubapp.ui.AppViewModel
+import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
 data class Note(
     val id: Int,
@@ -17,7 +17,7 @@ data class Note(
 )
 
 @Composable
-fun ListOfNotesScreen(viewModel: AppViewModel) {
+fun ListOfNotesScreen(viewModel: NoteFolderViewModel) {
     Scaffold(
         topBar = TODO(),
         bottomBar = TODO(),

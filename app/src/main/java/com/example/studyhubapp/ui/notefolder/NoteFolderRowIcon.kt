@@ -1,4 +1,4 @@
-package com.example.studyhubapp.component.notefolder
+package com.example.studyhubapp.ui.notefolder
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon

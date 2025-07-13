@@ -1,4 +1,4 @@
-package com.example.studyhubapp.component.notefolder
+package com.example.studyhubapp.ui.notefolder
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

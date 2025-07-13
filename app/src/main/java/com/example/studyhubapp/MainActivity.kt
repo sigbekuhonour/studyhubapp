@@ -13,8 +13,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.studyhubapp.navigation.AppNav
 import com.example.studyhubapp.theme.StudyHubAppTheme
-import com.example.studyhubapp.ui.AppViewModel
 import com.example.studyhubapp.ui.NoteFolderScreen
+import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
 
 
 class MainActivity : ComponentActivity() {
@@ -23,10 +23,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel: AppViewModel = viewModel()
             StudyHubAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AppNav(modifier = Modifier.padding(innerPadding), viewModel = viewModel)
+                    AppNav(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -37,7 +36,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    val viewModel: AppViewModel = viewModel()
+    val viewModel: NoteFolderViewModel = viewModel()
     StudyHubAppTheme {
         NoteFolderScreen(viewModel = viewModel)
     }
