@@ -38,14 +38,14 @@ import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun NoteFolderScreen(viewModel: AppViewModel) {
-    var lazyColumnState = rememberLazyListState()
+    val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }
     var actionText by rememberSaveable { mutableStateOf("") }
-    if (isEnabled) {
-        actionText = "Done"
+    actionText = if (isEnabled) {
+        "Done"
     } else {
-        actionText = "Edit"
+        "Edit"
     }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val textFieldState = rememberTextFieldState()

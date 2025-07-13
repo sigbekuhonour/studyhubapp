@@ -47,7 +47,7 @@ fun AddFolderDialog(
     onDismiss: () -> Unit
 ) {
     var folderName by rememberSaveable { mutableStateOf("") }
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = { onDismiss() }) {
         Surface(shape = MaterialTheme.shapes.extraLarge) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
