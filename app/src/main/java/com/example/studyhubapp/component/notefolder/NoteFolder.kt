@@ -105,7 +105,7 @@ fun FolderRow(
                 brush = SolidColor(value = MaterialTheme.colorScheme.inverseOnSurface),
                 shape = MaterialTheme.shapes.small
             )
-            .padding(horizontal = 5.dp)
+            .padding(horizontal = 15.dp)
     ) {
         NoteFolderIcon(icon)
         NoteFolderNameText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
