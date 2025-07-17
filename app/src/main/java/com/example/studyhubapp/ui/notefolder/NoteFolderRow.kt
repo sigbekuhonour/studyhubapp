@@ -3,6 +3,7 @@ package com.example.studyhubapp.ui.notefolder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.studyhubapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,6 +28,7 @@ fun FolderRow(
     textVal: String,
     noOfNotes: Int,
     isEnabled: Boolean,
+    navController: NavController,
     onDeleteClick: () -> Unit
 ) {
 
@@ -33,7 +36,15 @@ fun FolderRow(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .clickable(enabled = !isEnabled) {}
+            .combinedClickable(
+                enabled = !isEnabled,
+                //edit note folder name
+                onDoubleClick = { },
+                //Go into notes
+                onClick = {
+                    navController.navigate("NoteList")
+                }
+            )
             .background(color = MaterialTheme.colorScheme.inverseSurface)
             .height(40.dp)
             .border(
@@ -44,10 +55,10 @@ fun FolderRow(
             .padding(horizontal = 15.dp)
     ) {
         NoteFolderRowIcon(icon)
-        NoteFolderRowNameText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
+        NoteFolderRowText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
         Spacer(modifier = Modifier.weight(1f))
         if (!isEnabled) {
-            NoteFolderRowNameText(folderName = noOfNotes.toString())
+            NoteFolderRowText(folderName = noOfNotes.toString())
         } else {
             Icon(
                 painter = painterResource(id = R.drawable.delete_icon),

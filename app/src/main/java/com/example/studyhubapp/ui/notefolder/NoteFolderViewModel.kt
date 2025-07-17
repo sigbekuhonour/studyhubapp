@@ -7,7 +7,7 @@ import com.example.studyhubapp.ui.note.Note
 
 class NoteFolderViewModel : ViewModel() {
     //main functions include the following
-    //it would be key to have a mutable list of folders
+    //it would be key to have a mutable list of notes
     private val _folders = mutableStateListOf<NoteFolder>(
         NoteFolder(id = 0, icon = R.drawable.folder_icon, name = "Quick Notes"),
         NoteFolder(id = 1, icon = R.drawable.shared_folder, name = "Shared Notes"),
@@ -50,7 +50,7 @@ class NoteFolderViewModel : ViewModel() {
         )
     }
 
-    //delete notes in folders
+    //delete notes in notes
     fun deleteNotesInFolderWithId(folderName: String, noteId: Int) {
         val folderToDeleteNote = _folders.find { it.name == folderName }
         folderToDeleteNote?.listOfNotes?.removeIf { it.id == noteId }

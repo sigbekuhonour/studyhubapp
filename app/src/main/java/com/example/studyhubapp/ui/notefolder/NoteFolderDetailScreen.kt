@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
@@ -35,7 +36,7 @@ import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel) {
+fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel, navController: NavController) {
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }
@@ -53,7 +54,7 @@ fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Notes",
+                        text = "Folders",
                         color = MaterialTheme.colorScheme.scrim,
                         style = MaterialTheme.typography.headlineLarge
                     )
@@ -95,7 +96,7 @@ fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel) {
                 .padding(horizontal = 5.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            //implemented search bar to search through the folders list in viewmodel
+            //implemented search bar to search through the notes list in viewmodel
             SimpleSearchBar(
                 textFieldState = textFieldState,
                 searchResults = searchResults,
@@ -123,6 +124,7 @@ fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel) {
                         textVal = eachFolder.name,
                         noOfNotes = eachFolder.listOfNotes.size,
                         isEnabled = isEnabled,
+                        navController = navController,
                         onDeleteClick = { viewModel.deleteFolder(eachFolder.name) }
                     )
                 }

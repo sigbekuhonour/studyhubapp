@@ -6,6 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun NoteFolderRowNameText(folderName: String, modifier: Modifier = Modifier) {
+fun NoteFolderRowText(folderName: String, modifier: Modifier = Modifier) {
     Text(text = folderName, modifier = modifier, color = MaterialTheme.colorScheme.onPrimary)
 }
