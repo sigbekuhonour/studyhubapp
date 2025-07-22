@@ -32,11 +32,16 @@ import androidx.navigation.NavController
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
+import com.example.studyhubapp.ui.note.NoteViewModel
 
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel, navController: NavController) {
+fun NoteFolderDetailScreen(
+    noteFolderViewModel: NoteFolderViewModel,
+    noteViewModel: NoteViewModel,
+    navController: NavController
+) {
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }
@@ -96,7 +101,6 @@ fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel, navController: NavCon
                 .padding(horizontal = 5.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            //implemented search bar to search through the notes list in viewmodel
             SimpleSearchBar(
                 textFieldState = textFieldState,
                 searchResults = searchResults,
@@ -109,7 +113,7 @@ fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel, navController: NavCon
                 CreateNewFolderDialog(
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
                     onConfirm = { newFolderName ->
-                        viewModel.addFolder(newFolderName)
+                        noteFolderViewModel.addFolder(newFolderName)
                     }
                 )
             }
@@ -118,15 +122,15 @@ fun NoteFolderDetailScreen(viewModel: NoteFolderViewModel, navController: NavCon
                 verticalArrangement = Arrangement.spacedBy(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(viewModel.folders) { eachFolder ->
+                items(noteFolderViewModel.folders) { eachFolder ->
                     FolderRow(
+                        folderId = eachFolder.id,
                         icon = eachFolder.icon,
                         textVal = eachFolder.name,
-                        noOfNotes = eachFolder.listOfNotes.size,
+                        noOfNotes = noteViewModel.fetchNotesById(eachFolder.id).size,
                         isEnabled = isEnabled,
-                        navController = navController,
-                        onDeleteClick = { viewModel.deleteFolder(eachFolder.name) }
-                    )
+                        navController = navController
+                    ) { noteFolderViewModel.deleteFolder(eachFolder.name) }
                 }
 
             }

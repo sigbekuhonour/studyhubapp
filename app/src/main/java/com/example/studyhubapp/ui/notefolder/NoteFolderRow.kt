@@ -3,7 +3,6 @@ package com.example.studyhubapp.ui.notefolder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +24,7 @@ import com.example.studyhubapp.R
 @Composable
 fun FolderRow(
     icon: Int,
+    folderId: Int,
     textVal: String,
     noOfNotes: Int,
     isEnabled: Boolean,
@@ -36,15 +36,10 @@ fun FolderRow(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .combinedClickable(
-                enabled = !isEnabled,
-                //edit note folder name
-                onDoubleClick = { },
-                //Go into notes
-                onClick = {
-                    navController.navigate("NoteList")
-                }
-            )
+            .clickable(enabled = !isEnabled) {
+                navController.navigate("NoteList/$textVal/$folderId")
+            }
+
             .background(color = MaterialTheme.colorScheme.inverseSurface)
             .height(40.dp)
             .border(

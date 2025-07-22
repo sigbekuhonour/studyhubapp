@@ -2,57 +2,89 @@ package com.example.studyhubapp.ui.notefolder
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.R
-import com.example.studyhubapp.ui.note.Note
+import com.example.studyhubapp.domain.NoteFolderRepository
+import com.example.studyhubapp.domain.NoteFolderRepositoryImpl
+import com.example.studyhubapp.domain.model.Folder
+import kotlinx.coroutines.launch
 
-class NoteFolderViewModel : ViewModel() {
-    //main functions include the following
-    //it would be key to have a mutable list of notes
-    private val _folders = mutableStateListOf<NoteFolder>(
-        NoteFolder(id = 0, icon = R.drawable.folder_icon, name = "Quick Notes"),
-        NoteFolder(id = 1, icon = R.drawable.shared_folder, name = "Shared Notes"),
-        NoteFolder(id = 2, icon = R.drawable.deleted_folder, name = "Recently Deleted")
-    )
+class NoteFolderViewModel(
+    private val folderRepository: NoteFolderRepository,
+) : ViewModel() {
 
-    private val _recentlyDeletedFolder = mutableStateListOf<NoteFolder>()
+    private var _folders = mutableStateListOf<NoteFolder>()
     val folders: List<NoteFolder> get() = _folders
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            try {
+                val defaultFolders = folderRepository.getFolders()
+                defaultFolders.forEach { eachFolders ->
+                    _folders.add(
+                        NoteFolder(
+                            id = eachFolders.id,
+                            icon = getIcon(folder = eachFolders),
+                            name = eachFolders.title
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                println("Error loading data")
+            }
+        }
+    }
+
+
+    private fun getIcon(folder: Folder): Int {
+        var icon: Int = R.drawable.folder_icon
+        if (folder.title == "Shared Notes") {
+            icon = R.drawable.shared_folder
+        } else if (folder.title == "Deleted Notes") {
+            icon = R.drawable.deleted_folder
+        }
+        return icon
+    }
+
+    fun getFolderId(name: String): Int {
+        return _folders.indexOfFirst { eachFolder -> eachFolder.name == name }
+    }
 
     //add folder
     fun addFolder(name: String) {
-        val folderId = _folders.size
-        _folders.add(NoteFolder(id = folderId, name = name))
+        viewModelScope.launch {
+            folderRepository.addFolder(name)
+            _folders.clear()
+            loadData()
+        }
     }
 
     //delete folder
     fun deleteFolder(name: String) {
         //add to recently deleted first before deleting
-        val folderId = _recentlyDeletedFolder.size
-        val folderToAddNote = _folders.find { (it.name) == name }
-        if (folderToAddNote != null) {
-            _recentlyDeletedFolder.add(NoteFolder(id = folderId, name = folderToAddNote.name))
+        viewModelScope.launch {
+            folderRepository.deleteFolder(name = name)
+            println("Folder with $name has been deleted")
+            _folders.clear()
+            loadData()
         }
-
-        _folders.removeIf { it.name == name }
     }
 
-    //add notes
-    fun addNotesToFolderWithId(folderName: String, title: String, content: String?) {
-        val folderToAddNote = _folders.find { (it.name) == folderName }
-        val folderToAddNoteId = folderToAddNote?.id
-        val noteId = (folderToAddNote?.listOfNotes?.size?.plus(1) ?: 0)
-        folderToAddNote?.listOfNotes?.add(
-            Note(
-                folderId = folderToAddNoteId,
-                title = title,
-                content = content,
-                id = noteId
-            )
-        )
-    }
 
-    //delete notes in notes
-    fun deleteNotesInFolderWithId(folderName: String, noteId: Int) {
-        val folderToDeleteNote = _folders.find { it.name == folderName }
-        folderToDeleteNote?.listOfNotes?.removeIf { it.id == noteId }
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                NoteFolderViewModel(
+                    folderRepository = NoteFolderRepositoryImpl()
+                )
+            }
+        }
     }
 }

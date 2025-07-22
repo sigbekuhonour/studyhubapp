@@ -24,19 +24,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteListDetailScreen(viewModel: NoteViewModel, navController: NavController) {
-    //i still have things to fix when it comes to state management
+fun NoteListDetailScreen(
+    folderName: String,
+    folderId: Int?,
+    viewModel: NoteViewModel,
+    navController: NavController
+) {
+
     val textFieldState = rememberTextFieldState()
+    val noOfNotes = viewModel.fetchNotesById(folderId).size
     var searchResults by remember { mutableStateOf(listOf<String>()) }
     //
     Scaffold(
@@ -44,7 +47,7 @@ fun NoteListDetailScreen(viewModel: NoteViewModel, navController: NavController)
             TopAppBar(
                 title = {
                     Row(
-                        horizontalArrangement = Arrangement.Center,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -52,10 +55,11 @@ fun NoteListDetailScreen(viewModel: NoteViewModel, navController: NavController)
                             modifier = Modifier.clickable {
                                 navController.navigate("LandingPage")
                             },
+                            tint = MaterialTheme.colorScheme.scrim,
                             contentDescription = null
                         )
                         Text(
-                            text = "Notes",
+                            text = folderName,
                             color = MaterialTheme.colorScheme.scrim,
                             style = MaterialTheme.typography.headlineLarge
                         )
@@ -67,15 +71,15 @@ fun NoteListDetailScreen(viewModel: NoteViewModel, navController: NavController)
         },
         bottomBar = {
             BottomAppBar(
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                containerColor = MaterialTheme.colorScheme.inverseSurface
+                contentColor = MaterialTheme.colorScheme.scrim,
+                containerColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "No of notes is shown here")
+                    Text(text = "$noOfNotes note(s) in this folder")
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
                         modifier = Modifier.clickable {},
@@ -88,7 +92,9 @@ fun NoteListDetailScreen(viewModel: NoteViewModel, navController: NavController)
         },
         containerColor = MaterialTheme.colorScheme.onPrimary
     ) { inPad ->
-        Column(modifier = Modifier.padding(inPad)) {
+        Column(
+            modifier = Modifier.padding(inPad),
+        ) {
             SimpleSearchBar(
                 textFieldState = textFieldState,
                 searchResults = searchResults,
@@ -97,18 +103,12 @@ fun NoteListDetailScreen(viewModel: NoteViewModel, navController: NavController)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
                 onSearch = {})
+            Spacer(modifier = Modifier.padding(vertical = 20.dp))
             NoteDisplayCard(
-                notes = viewModel.notes,
+                notes = viewModel.fetchNotesById(folderId)
             )
         }
     }
 }
 
 
-@Preview
-@Composable
-private fun PrevNoteListScreen() {
-    val viewModel = viewModel<NoteViewModel>()
-    val navController = rememberNavController()
-    NoteListDetailScreen(viewModel, navController)
-}

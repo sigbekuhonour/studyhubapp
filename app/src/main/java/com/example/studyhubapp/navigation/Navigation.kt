@@ -17,12 +17,27 @@ fun AppNav() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "LandingPage") {
         composable("LandingPage") {
-            val viewModel: NoteFolderViewModel = viewModel()
-            NoteFolderDetailScreen(viewModel = viewModel,navController = navController)
-        }//
-        composable("NoteList") {
-            val viewModel: NoteViewModel = viewModel()
-            NoteListDetailScreen(viewModel = viewModel,navController = navController)
-        }//
+            val noteFolderViewModel: NoteFolderViewModel =
+                viewModel(factory = NoteFolderViewModel.Factory)
+            val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+            NoteFolderDetailScreen(
+                noteFolderViewModel = noteFolderViewModel,
+                noteViewModel = noteViewModel,
+                navController = navController
+            )
+        }
+        composable("NoteList/{folderName}/{folderId}") { navBackStackEntry ->
+            val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+            val folderName = navBackStackEntry.arguments?.getString("folderName")
+            val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
+            if (folderName != null) {
+                NoteListDetailScreen(
+                    folderName = folderName,
+                    folderId = folderId,
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
+        }
     }
 }
