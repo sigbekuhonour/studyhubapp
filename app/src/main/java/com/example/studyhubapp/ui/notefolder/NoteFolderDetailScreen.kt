@@ -32,14 +32,12 @@ import androidx.navigation.NavController
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
-import com.example.studyhubapp.ui.note.NoteViewModel
 
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun NoteFolderDetailScreen(
     noteFolderViewModel: NoteFolderViewModel,
-    noteViewModel: NoteViewModel,
     navController: NavController
 ) {
     val lazyColumnState = rememberLazyListState()
@@ -127,7 +125,7 @@ fun NoteFolderDetailScreen(
                         folderId = eachFolder.id,
                         icon = eachFolder.icon,
                         textVal = eachFolder.name,
-                        noOfNotes = noteViewModel.fetchNotesById(eachFolder.id).size,
+                        noOfNotes = noteFolderViewModel.getFolderContentSize(eachFolder.id),
                         isEnabled = isEnabled,
                         navController = navController
                     ) { noteFolderViewModel.deleteFolder(eachFolder.name) }

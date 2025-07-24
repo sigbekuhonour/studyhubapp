@@ -9,14 +9,16 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.R
 import com.example.studyhubapp.domain.NoteFolderRepository
 import com.example.studyhubapp.domain.NoteFolderRepositoryImpl
+import com.example.studyhubapp.domain.NoteRepositoryImpl
 import com.example.studyhubapp.domain.model.Folder
 import kotlinx.coroutines.launch
 
 class NoteFolderViewModel(
-    private val folderRepository: NoteFolderRepository,
+    private val folderRepository: NoteFolderRepository
 ) : ViewModel() {
 
     private var _folders = mutableStateListOf<NoteFolder>()
+
     val folders: List<NoteFolder> get() = _folders
 
     init {
@@ -42,6 +44,13 @@ class NoteFolderViewModel(
         }
     }
 
+    fun getFolderContentSize(folderId: Int): Int {
+        var contentSize: Int = 0
+        viewModelScope.launch {
+            contentSize = folderRepository.getFolderContentSize(folderId)
+        }
+        return contentSize
+    }
 
     private fun getIcon(folder: Folder): Int {
         var icon: Int = R.drawable.folder_icon
@@ -82,7 +91,7 @@ class NoteFolderViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 NoteFolderViewModel(
-                    folderRepository = NoteFolderRepositoryImpl()
+                    folderRepository = NoteFolderRepositoryImpl(NoteRepositoryImpl())
                 )
             }
         }

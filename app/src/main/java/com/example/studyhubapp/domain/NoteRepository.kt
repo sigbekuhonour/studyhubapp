@@ -3,7 +3,7 @@ package com.example.studyhubapp.domain
 import com.example.studyhubapp.domain.model.Note
 
 interface NoteRepository {
-    suspend fun fetchNotes(folderId: Int): List<Note>
+    suspend fun fetchNotes(folderId: Int?): List<Note>
     suspend fun getNotes(): List<Note>
     suspend fun getNoteById(folderId: Int, noteId: Int): Note
     suspend fun addNoteByFolderId(folderId: Int, title: String)
@@ -22,7 +22,7 @@ class NoteRepositoryImpl() : NoteRepository {
         return _notes
     }
 
-    override suspend fun fetchNotes(folderId: Int): List<Note> {
+    override suspend fun fetchNotes(folderId: Int?): List<Note> {
         return _notes.filter { note -> note.folderId == folderId }
     }
 

@@ -22,7 +22,6 @@ fun AppNav() {
             val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
             NoteFolderDetailScreen(
                 noteFolderViewModel = noteFolderViewModel,
-                noteViewModel = noteViewModel,
                 navController = navController
             )
         }
