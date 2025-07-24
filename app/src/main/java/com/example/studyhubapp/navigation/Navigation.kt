@@ -19,7 +19,6 @@ fun AppNav() {
         composable("LandingPage") {
             val noteFolderViewModel: NoteFolderViewModel =
                 viewModel(factory = NoteFolderViewModel.Factory)
-            val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
             NoteFolderDetailScreen(
                 noteFolderViewModel = noteFolderViewModel,
                 navController = navController
