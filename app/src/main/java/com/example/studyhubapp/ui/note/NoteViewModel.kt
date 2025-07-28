@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.domain.NoteRepository
 import com.example.studyhubapp.domain.NoteRepositoryImpl
+import com.example.studyhubapp.domain.datasource.local.LocalStorageDataSourceImpl
 import kotlinx.coroutines.launch
 
 class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
@@ -16,15 +17,17 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val defaultNotes = noteRepository.getNotes()
-                defaultNotes.forEach { eachNotes ->
-                    _notes.add(
-                        Note(
-                            id = eachNotes.id,
-                            folderId = eachNotes.folderId,
-                            title = eachNotes.title,
-                            content = eachNotes.content
+                if (defaultNotes != _notes.toList()) {
+                    defaultNotes.forEach { eachNotes ->
+                        _notes.add(
+                            Note(
+                                id = eachNotes.id,
+                                folderId = eachNotes.folderId,
+                                title = eachNotes.title,
+                                content = eachNotes.content
+                            )
                         )
-                    )
+                    }
                 }
             } catch (e: Exception) {
                 println("Error loading data")
@@ -55,9 +58,9 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun deleteNotesInFolderWithId(folderId: Int, title: String) {
+    fun deleteNotesInFolderWithId(folderId: Int, noteId: Int) {
         viewModelScope.launch {
-            noteRepository.deleteNoteByFolderId(folderId = folderId, title = title)
+            noteRepository.deleteNoteByFolderId(folderId = folderId, noteId = noteId)
         }
     }
 
@@ -65,7 +68,7 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 NoteViewModel(
-                    noteRepository = NoteRepositoryImpl()
+                    noteRepository = NoteRepositoryImpl(LocalStorageDataSourceImpl())
                 )
             }
         }

@@ -128,7 +128,7 @@ fun NoteFolderDetailScreen(
                         noOfNotes = noteFolderViewModel.getFolderContentSize(eachFolder.id),
                         isEnabled = isEnabled,
                         navController = navController
-                    ) { noteFolderViewModel.deleteFolder(eachFolder.name) }
+                    ) { noteFolderViewModel.deleteFolder(eachFolder.id) }
                 }
 
             }

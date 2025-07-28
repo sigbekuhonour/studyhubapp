@@ -1,5 +1,6 @@
 package com.example.studyhubapp.domain
 
+import com.example.studyhubapp.domain.datasource.local.LocalStorageDataSource
 import com.example.studyhubapp.domain.model.Note
 
 interface NoteRepository {
@@ -7,40 +8,35 @@ interface NoteRepository {
     suspend fun getNotes(): List<Note>
     suspend fun getNoteById(folderId: Int, noteId: Int): Note
     suspend fun addNoteByFolderId(folderId: Int, title: String)
-    suspend fun deleteNoteByFolderId(folderId: Int, title: String)
+    suspend fun deleteNoteByFolderId(folderId: Int, noteId: Int)
 }
 
-class NoteRepositoryImpl() : NoteRepository {
-    private val _notes = mutableListOf<Note>(
-        Note(id = 0, folderId = 0, title = "First Note", content = "First content"),
-        Note(id = 1, folderId = 0, title = "Second Note", content = "Second content etc"),
-        Note(id = 2, folderId = 1, title = "Third Note", content = "Third content etc"),
-        Note(id = 3, folderId = 2, title = "Fourth Note", content = "Fourth content etc")
-    )
+class NoteRepositoryImpl(private val dataSourceImpl: LocalStorageDataSource) : NoteRepository {
+
 
     override suspend fun getNotes(): List<Note> {
-        return _notes
+        return dataSourceImpl.getAllNotes()
     }
 
     override suspend fun fetchNotes(folderId: Int): List<Note> {
-        return _notes.filter { note -> note.folderId == folderId }
+        return dataSourceImpl.getAllNotes().filter { note -> note.folderId == folderId }
     }
 
     override suspend fun getNoteById(
         folderId: Int,
         noteId: Int
     ): Note {
-        return _notes.first { note -> note.id == noteId && note.folderId == folderId }
+        return dataSourceImpl.getAllNotes()
+            .first { note -> note.id == noteId && note.folderId == folderId }
     }
 
     override suspend fun addNoteByFolderId(folderId: Int, title: String) {
-        val noteId = _notes.size
-        _notes.add(element = Note(id = noteId, folderId = folderId, title = title))
+        val noteId = dataSourceImpl.getAllNotes().size
+        dataSourceImpl.addNote(Note(id = noteId, folderId = folderId, title = title))
     }
 
-    override suspend fun deleteNoteByFolderId(folderId: Int, title: String) {
-        _notes.removeIf { eachNote ->
-            eachNote.folderId == folderId && eachNote.title == title
-        }
+    override suspend fun deleteNoteByFolderId(folderId: Int, noteId: Int) {
+        dataSourceImpl.deleteNoteById(folderId, noteId)
     }
+
 }

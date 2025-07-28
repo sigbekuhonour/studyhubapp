@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.R
 import com.example.studyhubapp.domain.NoteFolderRepository
 import com.example.studyhubapp.domain.NoteFolderRepositoryImpl
-import com.example.studyhubapp.domain.NoteRepositoryImpl
+import com.example.studyhubapp.domain.datasource.local.LocalStorageDataSourceImpl
 import com.example.studyhubapp.domain.model.Folder
 import kotlinx.coroutines.launch
 
@@ -76,11 +76,10 @@ class NoteFolderViewModel(
     }
 
     //delete folder
-    fun deleteFolder(name: String) {
+    fun deleteFolder(folderId: Int) {
         //add to recently deleted first before deleting
         viewModelScope.launch {
-            folderRepository.deleteFolder(name = name)
-            println("Folder with $name has been deleted")
+            folderRepository.deleteFolder(folderId)
             _folders.clear()
             loadData()
         }
@@ -91,7 +90,7 @@ class NoteFolderViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 NoteFolderViewModel(
-                    folderRepository = NoteFolderRepositoryImpl(NoteRepositoryImpl())
+                    folderRepository = NoteFolderRepositoryImpl(LocalStorageDataSourceImpl())
                 )
             }
         }
