@@ -32,7 +32,7 @@ import com.example.studyhubapp.component.field.TitleTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteDetail(
+fun NoteEditorScreen(
     folderName: String,
     folderId: Int,
     title: String,

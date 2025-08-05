@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.studyhubapp.ui.note.NoteDetail
+import com.example.studyhubapp.ui.note.NoteEditorScreen
 import com.example.studyhubapp.ui.note.NoteListDetailScreen
 import com.example.studyhubapp.ui.note.NoteViewModel
 import com.example.studyhubapp.ui.notefolder.NoteFolderDetailScreen
@@ -45,7 +45,7 @@ fun AppNav() {
             val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
             val title = navBackStackEntry.arguments?.getString("title")
             if (folderName != null && folderId != null && title != null) {
-                NoteDetail(
+                NoteEditorScreen(
                     folderName = folderName,
                     folderId = folderId,
                     viewModel = viewModel,
