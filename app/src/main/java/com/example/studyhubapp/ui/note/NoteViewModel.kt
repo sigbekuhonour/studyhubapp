@@ -17,17 +17,16 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 val defaultNotes = noteRepository.getNotes()
-                if (defaultNotes != _notes.toList()) {
-                    defaultNotes.forEach { eachNotes ->
-                        _notes.add(
-                            Note(
-                                id = eachNotes.id,
-                                folderId = eachNotes.folderId,
-                                title = eachNotes.title,
-                                content = eachNotes.content
-                            )
+                _notes.clear()
+                defaultNotes.forEach { eachNotes ->
+                    _notes.add(
+                        Note(
+                            id = eachNotes.id,
+                            folderId = eachNotes.folderId,
+                            title = eachNotes.title,
+                            content = eachNotes.content
                         )
-                    }
+                    )
                 }
             } catch (e: Exception) {
                 println("Error loading data")
@@ -50,6 +49,21 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         noteId: Int
     ): Note {
         return _notes.first { note -> note.id == noteId && note.folderId == folderId }
+    }
+
+    fun getNoteId(folderId: Int, title: String): Int {
+        return _notes.first { eachNote -> eachNote.folderId == folderId && eachNote.title == title }.id
+    }
+
+    fun saveNoteChanges(
+        folderId: Int,
+        noteId: Int,
+        title: String? = null,
+        content: String? = null
+    ) {
+        viewModelScope.launch {
+            noteRepository.saveNoteChanges(folderId, noteId, title, content)
+        }
     }
 
     fun addNotesToFolderWithId(folderId: Int, title: String) {

@@ -22,10 +22,13 @@ class NoteFolderViewModel(
     val folders: List<NoteFolder> get() = _folders
 
     init {
-        loadData()
+        viewModelScope.launch {
+            val fetchedFolders = folderRepository.getFolders() // Fetch data
+            loadData(fetchedFolders) // Then call loadData with the fetched data
+        }
     }
 
-    private fun loadData() {
+    private fun loadData(currentList: List<Folder>) {
         viewModelScope.launch {
             try {
                 val defaultFolders = folderRepository.getFolders()
@@ -70,8 +73,17 @@ class NoteFolderViewModel(
     fun addFolder(name: String) {
         viewModelScope.launch {
             folderRepository.addFolder(name)
+            val updated = folderRepository.getFolders()
             _folders.clear()
-            loadData()
+            updated.forEach { eachFolder ->
+                _folders.add(
+                    NoteFolder(
+                        id = eachFolder.id,
+                        icon = getIcon(eachFolder),
+                        name = eachFolder.title
+                    )
+                )
+            }
         }
     }
 
@@ -80,8 +92,17 @@ class NoteFolderViewModel(
         //add to recently deleted first before deleting
         viewModelScope.launch {
             folderRepository.deleteFolder(folderId)
+            val updated = folderRepository.getFolders()
             _folders.clear()
-            loadData()
+            updated.forEach { eachFolder ->
+                _folders.add(
+                    NoteFolder(
+                        id = eachFolder.id,
+                        icon = getIcon(eachFolder),
+                        name = eachFolder.title
+                    )
+                )
+            }
         }
     }
 

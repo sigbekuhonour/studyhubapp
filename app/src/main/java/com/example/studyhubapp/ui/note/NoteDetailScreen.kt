@@ -4,13 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Check
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,21 +27,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.studyhubapp.R
-import com.example.studyhubapp.component.searchbar.SimpleSearchBar
+import com.example.studyhubapp.component.field.ContentTextField
+import com.example.studyhubapp.component.field.TitleTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteListDetailScreen(
+fun NoteDetail(
     folderName: String,
-    folderId: Int?,
+    folderId: Int,
+    title: String,
     viewModel: NoteViewModel,
     navController: NavController
 ) {
-
-    val textFieldState = rememberTextFieldState()
-    val noOfNotes = viewModel.fetchNotesById(folderId).size
-    var searchResults by remember { mutableStateOf(listOf<String>()) }
-    //
+    val note = viewModel.getNoteById(folderId, viewModel.getNoteId(folderId, title))
+    var title by remember { mutableStateOf(note.title) }
+    var content by remember { mutableStateOf(note.content) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -52,9 +52,7 @@ fun NoteListDetailScreen(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.arrow_back),
-                            modifier = Modifier.clickable {
-                                navController.popBackStack()
-                            },
+                            modifier = Modifier.clickable { navController.popBackStack() },
                             tint = MaterialTheme.colorScheme.scrim,
                             contentDescription = null
                         )
@@ -64,52 +62,52 @@ fun NoteListDetailScreen(
                             style = MaterialTheme.typography.headlineMedium
                         )
                     }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary
-                )
+                },
+                actions = {
+                    IconButton(onClick = {
+                        viewModel.saveNoteChanges(
+                            folderId = folderId,
+                            noteId = note.id,
+                            title = title,
+                            content = content
+                        )
+                    }) {
+                        Icon(
+                            imageVector = Icons.Sharp.Check,
+                            tint = MaterialTheme.colorScheme.scrim,
+                            contentDescription = null
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.onPrimary)
             )
         },
+
         bottomBar = {
             BottomAppBar(
                 contentColor = MaterialTheme.colorScheme.scrim,
                 containerColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = "$noOfNotes note(s) in this folder")
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        modifier = Modifier.clickable {},
-                        painter = painterResource(id = R.drawable.add_notes),
-                        tint = MaterialTheme.colorScheme.scrim,
-                        contentDescription = ""
-                    )
-                }
+
             }
         },
         containerColor = MaterialTheme.colorScheme.onPrimary
     ) { inPad ->
         Column(
             modifier = Modifier.padding(inPad),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            SimpleSearchBar(
-                textFieldState = textFieldState,
-                searchResults = searchResults,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
-                onSearch = {})
-            Spacer(modifier = Modifier.padding(vertical = 20.dp))
-            NoteDisplayCard(
-                folderName = folderName,
-                notes = viewModel.fetchNotesById(folderId), navController = navController
-            )
+            TitleTextField(
+                title = title,
+                onTitleChange = {
+                    title = it
+                })
+            ContentTextField(
+                content = content,
+                onContentChange = {
+                    content = it
+                })
+
         }
     }
 }
-
-

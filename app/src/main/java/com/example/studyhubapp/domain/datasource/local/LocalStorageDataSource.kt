@@ -10,6 +10,12 @@ interface LocalStorageDataSource {
     suspend fun getAllNotes(): List<Note>
     suspend fun deleteNoteById(folderId: Int, noteId: Int)
     suspend fun addNote(note: Note)
+    suspend fun saveNoteChanges(
+        folderId: Int,
+        noteId: Int,
+        title: String? = null,
+        content: String? = null
+    )
 }
 
 class LocalStorageDataSourceImpl : LocalStorageDataSource {
@@ -29,23 +35,39 @@ class LocalStorageDataSourceImpl : LocalStorageDataSource {
         return _folders
     }
 
-    override suspend fun deleteFolderById(folderId: Int) {
-        _folders.removeIf { folder -> folder.id == folderId }
-    }
-
-    override suspend fun addFolder(folder: Folder) {
-        _folders.add(folder)
-    }
-
     override suspend fun getAllNotes(): List<Note> {
         return _notes
+    }
+
+    override suspend fun deleteFolderById(folderId: Int) {
+        _folders.removeIf { folder -> folder.id == folderId }
     }
 
     override suspend fun deleteNoteById(folderId: Int, noteId: Int) {
         _notes.removeIf { note -> note.id == noteId && note.folderId == folderId }
     }
 
+    override suspend fun addFolder(folder: Folder) {
+        _folders.add(folder)
+    }
+
     override suspend fun addNote(note: Note) {
         _notes.add(note)
+    }
+
+    override suspend fun saveNoteChanges(
+        folderId: Int,
+        noteId: Int,
+        title: String?,
+        content: String?
+    ) {
+        if (title != null) {
+            _notes.filter { eachNote -> eachNote.folderId == folderId }.get(index = noteId).title =
+                title
+        }
+        if (content != null) {
+            _notes.filter { eachNote -> eachNote.folderId == folderId }
+                .get(index = noteId).content = content
+        }
     }
 }

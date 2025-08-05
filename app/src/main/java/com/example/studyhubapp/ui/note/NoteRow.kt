@@ -15,14 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.studyhubapp.R
 
 @Composable
-fun NoteRow(title: String, content: String?) {
+fun NoteRow(
+    title: String,
+    folderName: String,
+    content: String?,
+    folderId: Int,
+    navController: NavController
+) {
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable {}
+        modifier = Modifier.clickable { navController.navigate("Note/$folderName/$folderId/$title") }
     ) {
         Icon(
             painter = painterResource(id = R.drawable.note_icon),

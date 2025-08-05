@@ -9,6 +9,12 @@ interface NoteRepository {
     suspend fun getNoteById(folderId: Int, noteId: Int): Note
     suspend fun addNoteByFolderId(folderId: Int, title: String)
     suspend fun deleteNoteByFolderId(folderId: Int, noteId: Int)
+    suspend fun saveNoteChanges(
+        folderId: Int,
+        noteId: Int,
+        title: String? = null,
+        content: String? = null
+    )
 }
 
 class NoteRepositoryImpl(private val dataSourceImpl: LocalStorageDataSource) : NoteRepository {
@@ -39,4 +45,12 @@ class NoteRepositoryImpl(private val dataSourceImpl: LocalStorageDataSource) : N
         dataSourceImpl.deleteNoteById(folderId, noteId)
     }
 
+    override suspend fun saveNoteChanges(
+        folderId: Int,
+        noteId: Int,
+        title: String?,
+        content: String?
+    ) {
+        dataSourceImpl.saveNoteChanges(folderId, noteId, title, content)
+    }
 }

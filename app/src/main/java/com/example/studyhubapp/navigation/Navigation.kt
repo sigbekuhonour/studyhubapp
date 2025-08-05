@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.studyhubapp.ui.note.NoteDetail
 import com.example.studyhubapp.ui.note.NoteListDetailScreen
 import com.example.studyhubapp.ui.note.NoteViewModel
 import com.example.studyhubapp.ui.notefolder.NoteFolderDetailScreen
@@ -36,6 +37,23 @@ fun AppNav() {
                     navController = navController
                 )
             }
+
+        }
+        composable("Note/{folderName}/{folderId}/{title}") { navBackStackEntry ->
+            val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+            val folderName = navBackStackEntry.arguments?.getString("folderName")
+            val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
+            val title = navBackStackEntry.arguments?.getString("title")
+            if (folderName != null && folderId != null && title != null) {
+                NoteDetail(
+                    folderName = folderName,
+                    folderId = folderId,
+                    viewModel = viewModel,
+                    navController = navController,
+                    title = title
+                )
+            }
+
         }
     }
 }
