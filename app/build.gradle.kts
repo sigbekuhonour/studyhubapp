@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.studyhubapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.studyhubapp"
@@ -41,12 +41,13 @@ android {
 
 
 dependencies {
+    implementation(libs.androidx.media3.common.ktx)
     val nav_version = "2.9.0"
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.9")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.1")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -1,5 +1,6 @@
 package com.example.studyhubapp.ui.notefolder
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,19 +26,20 @@ import com.example.studyhubapp.R
 fun FolderRow(
     icon: Int,
     folderId: Int,
-    textVal: String,
-    noOfNotes: Int,
+    folderName: String,
+    noteFolderContentSize: Int,
     isEnabled: Boolean,
     navController: NavController,
     onDeleteClick: () -> Unit
 ) {
 
+    Log.d("FolderRow", "Folder $folderId noteCount: $noteFolderContentSize")
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clickable(enabled = !isEnabled) {
-                navController.navigate("NoteList/$textVal/$folderId")
+                navController.navigate("NoteList/$folderName/$folderId")
             }
 
             .background(color = MaterialTheme.colorScheme.inverseSurface)
@@ -50,10 +52,10 @@ fun FolderRow(
             .padding(horizontal = 15.dp)
     ) {
         NoteFolderRowIcon(icon)
-        NoteFolderRowText(folderName = textVal, modifier = Modifier.padding(start = 25.dp))
+        NoteFolderRowText(folderName = folderName, modifier = Modifier.padding(start = 25.dp))
         Spacer(modifier = Modifier.weight(1f))
         if (!isEnabled) {
-            NoteFolderRowText(folderName = noOfNotes.toString())
+            NoteFolderRowText(folderName = noteFolderContentSize.toString())
         } else {
             Icon(
                 painter = painterResource(id = R.drawable.delete_icon),

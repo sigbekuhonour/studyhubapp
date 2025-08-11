@@ -82,7 +82,11 @@ fun NoteListDetailScreen(
                     Text(text = "$noOfNotes note(s) in this folder")
                     Spacer(modifier = Modifier.weight(1f))
                     Icon(
-                        modifier = Modifier.clickable {},
+                        modifier = Modifier.clickable {
+                            navController.navigate(
+                                "Note/$folderName/$folderId/New_Note"
+                            )
+                        },
                         painter = painterResource(id = R.drawable.add_notes),
                         tint = MaterialTheme.colorScheme.scrim,
                         contentDescription = ""

@@ -1,6 +1,6 @@
 package com.example.studyhubapp.ui.note
 
-import androidx.compose.runtime.mutableStateListOf
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,51 +8,40 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.domain.NoteRepository
 import com.example.studyhubapp.domain.NoteRepositoryImpl
-import com.example.studyhubapp.domain.datasource.local.LocalStorageDataSourceImpl
+import com.example.studyhubapp.domain.datasource.local.LocalStorageDataSourceProvider
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
-    private var _notes = mutableStateListOf<Note>()
-    private fun loadData() {
-        viewModelScope.launch {
-            try {
-                val defaultNotes = noteRepository.getNotes()
-                _notes.clear()
-                defaultNotes.forEach { eachNotes ->
-                    _notes.add(
-                        Note(
-                            id = eachNotes.id,
-                            folderId = eachNotes.folderId,
-                            title = eachNotes.title,
-                            content = eachNotes.content
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                println("Error loading data")
+    private var _notes = noteRepository.getNotes()
+    val notes: StateFlow<List<Note>>
+        get() = _notes.map { noteList ->
+            noteList.map { eachNote ->
+                Note(
+                    id = eachNote.id,
+                    folderId = eachNote.folderId,
+                    title = eachNote.title,
+                    content = eachNote.content
+                )
             }
-        }
-    }
-
-    init {
-        loadData()
-    }
-
-    val notes: List<Note> get() = _notes
+        }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
 
     fun fetchNotesById(folderId: Int?): List<Note> {
-        return _notes.filter { eachNote -> eachNote.folderId == folderId }
+        return notes.value.filter { eachNote -> eachNote.folderId == folderId }
     }
 
     fun getNoteById(
         folderId: Int,
-        noteId: Int
+        noteId: Int?
     ): Note {
-        return _notes.first { note -> note.id == noteId && note.folderId == folderId }
+        return notes.value.first { note -> note.id == noteId && note.folderId == folderId }
     }
 
-    fun getNoteId(folderId: Int, title: String): Int {
-        return _notes.first { eachNote -> eachNote.folderId == folderId && eachNote.title == title }.id
+    fun getNoteId(folderId: Int, title: String): Int? {
+        return notes.value.firstOrNull { eachNote -> eachNote.folderId == folderId && eachNote.title == title }?.id
     }
 
     fun saveNoteChanges(
@@ -68,6 +57,7 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
 
     fun addNotesToFolderWithId(folderId: Int, title: String) {
         viewModelScope.launch {
+            Log.i("NOTE_ADDED", "ADDED NOTES TO FOLDER ID $folderId")
             noteRepository.addNoteByFolderId(folderId = folderId, title = title)
         }
     }
@@ -82,7 +72,7 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 NoteViewModel(
-                    noteRepository = NoteRepositoryImpl(LocalStorageDataSourceImpl())
+                    noteRepository = NoteRepositoryImpl(LocalStorageDataSourceProvider.instance)
                 )
             }
         }

@@ -1,5 +1,7 @@
 package com.example.studyhubapp.ui.notefolder
 
+
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.studyhubapp.R
 import com.example.studyhubapp.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.component.searchbar.SimpleSearchBar
 
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun NoteFolderDetailScreen(
@@ -43,15 +48,12 @@ fun NoteFolderDetailScreen(
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
     var isEnabled by rememberSaveable { mutableStateOf(false) }
-    var actionText by rememberSaveable { mutableStateOf("") }
-    actionText = if (isEnabled) {
-        "Done"
-    } else {
-        "Edit"
-    }
+    val actionText = if (isEnabled) "Done" else "Edit"
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val textFieldState = rememberTextFieldState()
     var searchResults by remember { mutableStateOf(listOf<String>()) }
+    val folders = noteFolderViewModel.folders.collectAsState().value
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,10 +91,17 @@ fun NoteFolderDetailScreen(
                         icon = R.drawable.new_folder,
                         onClick = { newFolderButtonIsClicked = !newFolderButtonIsClicked })
                     Spacer(modifier = Modifier.weight(1f))
-                    BottomAppBarIcon(icon = R.drawable.new_notes)
+                    BottomAppBarIcon(
+                        icon = R.drawable.new_notes,
+                        onClick = {
+                            navController.navigate(
+                                "Note/${folders.first().name}/${folders.first().id}/New_Note"
+                            )
+                        })
                 }
             )
         }) { inPad ->
+
         Column(
             modifier = Modifier
                 .padding(inPad)
@@ -115,20 +124,28 @@ fun NoteFolderDetailScreen(
                     }
                 )
             }
+
             LazyColumn(
                 state = lazyColumnState,
                 verticalArrangement = Arrangement.spacedBy(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(noteFolderViewModel.folders) { eachFolder ->
+                items(folders) { eachFolder ->
+                    val noOfContents by noteFolderViewModel.getFolderContentSize(eachFolder.id)
+                        .collectAsState(initial = 0)
+                    Log.i(
+                        "NoteFolderDetailScreen",
+                        "Current size of ${eachFolder.name}: $noOfContents"
+                    )
                     FolderRow(
                         folderId = eachFolder.id,
                         icon = eachFolder.icon,
-                        textVal = eachFolder.name,
-                        noOfNotes = noteFolderViewModel.getFolderContentSize(eachFolder.id),
+                        folderName = eachFolder.name,
+                        noteFolderContentSize = noOfContents,
                         isEnabled = isEnabled,
-                        navController = navController
-                    ) { noteFolderViewModel.deleteFolder(eachFolder.id) }
+                        navController = navController,
+                        onDeleteClick = { noteFolderViewModel.deleteFolder(eachFolder.id) }
+                    )
                 }
 
             }
