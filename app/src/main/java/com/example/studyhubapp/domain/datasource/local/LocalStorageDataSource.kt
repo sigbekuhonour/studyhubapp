@@ -18,6 +18,8 @@ interface LocalStorageDataSource {
         title: String? = null,
         content: String? = null
     )
+
+    suspend fun updateFolderName(folderId: Int, newFolderName: String)
 }
 
 class LocalStorageDataSourceImpl : LocalStorageDataSource {
@@ -75,6 +77,16 @@ class LocalStorageDataSourceImpl : LocalStorageDataSource {
                     content = content ?: eachNote.content
                 )
             } else eachNote
+        }
+    }
+
+    override suspend fun updateFolderName(folderId: Int, newFolderName: String) {
+        _folders.value = _folders.value.map { eachFolder ->
+            if (eachFolder.id == folderId) {
+                eachFolder.copy(title = newFolderName)
+            } else {
+                eachFolder
+            }
         }
     }
 }

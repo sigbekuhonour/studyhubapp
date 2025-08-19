@@ -54,6 +54,12 @@ class NoteFolderViewModel(
         }
     }
 
+    fun updateFolderName(folderId: Int, currentFolderName: String) {
+        viewModelScope.launch {
+            folderRepository.updateFolderName(folderId, currentFolderName)
+        }
+    }
+
     //delete folder
     fun deleteFolder(folderId: Int) {
         //add to recently deleted first before deleting

@@ -13,6 +13,7 @@ interface NoteFolderRepository {
     fun getFolderContentSize(folderId: Int): Flow<Int>
     suspend fun addFolder(name: String)
     suspend fun deleteFolder(folderId: Int)
+    suspend fun updateFolderName(folderId: Int, newFolderName: String)
 }
 
 
@@ -39,5 +40,9 @@ class NoteFolderRepositoryImpl(private val dataSource: LocalStorageDataSource) :
 
     override suspend fun deleteFolder(folderId: Int) {
         dataSource.deleteFolderById(folderId)
+    }
+
+    override suspend fun updateFolderName(folderId: Int, newFolderName: String) {
+        dataSource.updateFolderName(folderId, newFolderName = newFolderName)
     }
 }

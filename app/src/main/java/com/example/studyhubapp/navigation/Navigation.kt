@@ -10,6 +10,7 @@ import com.example.studyhubapp.ui.note.NoteListDetailScreen
 import com.example.studyhubapp.ui.note.NoteViewModel
 import com.example.studyhubapp.ui.notefolder.NoteFolderDetailScreen
 import com.example.studyhubapp.ui.notefolder.NoteFolderViewModel
+import com.example.studyhubapp.ui.notefolder.RenameFolderScreen
 
 
 @Composable
@@ -35,6 +36,20 @@ fun AppNav() {
                     folderId = folderId,
                     viewModel = viewModel,
                     navController = navController
+                )
+            }
+        }
+        composable("rename/{folderId}/{folderName}") { navBackStackEntry ->
+            val noteFolderViewModel: NoteFolderViewModel =
+                viewModel(factory = NoteFolderViewModel.Factory)
+            val folderName = navBackStackEntry.arguments?.getString("folderName")
+            val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
+            if (folderName != null && folderId != null) {
+                RenameFolderScreen(
+                    folderId = folderId,
+                    currentFolderName = folderName,
+                    navController = navController,
+                    viewModel = noteFolderViewModel
                 )
             }
 
