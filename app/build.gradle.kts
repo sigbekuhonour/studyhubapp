@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -10,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.studyhubapp"
-        minSdk = 26
-        targetSdk = 35
+        minSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -41,13 +42,23 @@ android {
 
 
 dependencies {
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
     implementation(libs.androidx.media3.common.ktx)
-    val nav_version = "2.9.0"
-    testImplementation("junit:junit:4.13.2")
+    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation("com.google.android.gms:play-services-auth:21.4.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation(libs.androidx.credentials)
+    implementation(libs.googleid)
+    val nav_version = "2.9.3"
+    testImplementation(libs.junit)
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.8.3")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

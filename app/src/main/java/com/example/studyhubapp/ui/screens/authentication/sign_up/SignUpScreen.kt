@@ -1,0 +1,123 @@
+package com.example.studyhubapp.ui.screens.authentication.sign_up
+
+import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.studyhubapp.R
+import com.example.studyhubapp.ui.component.button.CreateAccountButton
+import com.example.studyhubapp.ui.component.button.SignInWithGoogleButton
+import com.example.studyhubapp.ui.component.field.EmailTextField
+import com.example.studyhubapp.ui.component.field.PasswordTextField
+import com.example.studyhubapp.ui.screens.authentication.AuthState
+import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel,
+    navController: NavController
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val authState by viewModel.authState.collectAsState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val context = LocalContext.current
+    val serverClientId = remember {
+        context.getString(R.string.default_web_client_id)
+    }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                navController.navigate("LandingPage")
+            }
+
+            is AuthState.UnAuthenticated -> {}
+            is AuthState.Error -> {
+                /* show error */
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_LONG)
+                    .show()
+            }
+            // ...
+        }
+    }
+
+    Scaffold(topBar = {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "Welcome to Studyhub",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.onPrimary),
+            scrollBehavior = scrollBehavior
+        )
+    }, containerColor = MaterialTheme.colorScheme.onPrimary) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(space = 20.dp)
+        ) {
+
+            EmailTextField(title = email) {
+                email = it
+            }
+            PasswordTextField(title = password) {
+                password = it
+            }
+            CreateAccountButton(
+                buttonText = "Create account",
+                onClick = {
+                    viewModel.signUpWithEmail(email, password)
+                    viewModel.updateAuthStatus(AuthState.Authenticated)
+                }
+            )
+            SignInWithGoogleButton(
+                text = "Create account with google",
+                onClick = {
+                    viewModel.signInWithGoogle(
+                        context = context,
+                        serverClientId = serverClientId,
+                    )
+                    viewModel.updateAuthStatus(AuthState.Authenticated)
+                },
+            )
+            Row {
+                Text(text = "Do you already have an account?")
+                Spacer(modifier = Modifier.padding(horizontal = 3.dp))
+                Text(
+                    text = "Login here",
+                    modifier = Modifier.clickable { navController.navigate("login") },
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+        }
+    }
+}
