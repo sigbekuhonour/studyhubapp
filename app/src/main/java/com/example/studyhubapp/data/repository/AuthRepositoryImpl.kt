@@ -104,8 +104,13 @@ class AuthRepositoryImpl : AuthRepository {
         awaitClose()
     }
 
-    override suspend fun signOut() {
-        auth.signOut()
+    override suspend fun signOut(): AuthResponse {
+        return try {
+            auth.signOut()
+            AuthResponse.Success
+        } catch (e: Exception) {
+            AuthResponse.Error("Sign out failed: ${e.message}")
+        }
     }
 
     private fun createNonce(): String {

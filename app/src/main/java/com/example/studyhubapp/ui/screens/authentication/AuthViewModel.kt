@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
-    private val _authState = MutableStateFlow<AuthState>(AuthState.UnAuthenticated)
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
 
     //
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
-    
+
     fun signUpWithEmail(email: String, password: String) {
         viewModelScope.launch {
             try {
@@ -94,6 +94,22 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 Log.e("AuthViewModel", "Sign in with Google exception", e)
             }
 
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            when (authRepository.signOut()) {
+                is AuthResponse.Success -> {
+                    _authState.value = AuthState.Unauthenticated
+                }
+
+                is AuthResponse.Error -> {
+                    // Handle error, but probably still sign out locally
+                    _authState.value = AuthState.Error("Error occurred during sign out")
+                    // Maybe show a warning toast
+                }
+            }
         }
     }
 

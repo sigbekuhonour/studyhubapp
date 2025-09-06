@@ -21,6 +21,6 @@ interface AuthRepository {
         password: String
     ): Flow<AuthResponse>
 
-    suspend fun signOut()
+    suspend fun signOut(): AuthResponse
 
 }

@@ -1,5 +1,6 @@
 package com.example.studyhubapp.ui.screens.authentication.login
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +31,7 @@ import com.example.studyhubapp.ui.component.button.CreateAccountButton
 import com.example.studyhubapp.ui.component.button.SignInWithGoogleButton
 import com.example.studyhubapp.ui.component.field.EmailTextField
 import com.example.studyhubapp.ui.component.field.PasswordTextField
+import com.example.studyhubapp.ui.screens.authentication.AuthState
 import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,10 +43,27 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val authState by viewModel.authState.collectAsState()
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val serverClientId = remember {
         context.getString(R.string.default_web_client_id)
+    }
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                Toast.makeText(context, "Authentication successful", Toast.LENGTH_LONG).show()
+                navController.navigate("LandingPage")
+            }
+
+            is AuthState.Unauthenticated -> {}
+            is AuthState.Error -> {
+                /* show error */
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_LONG)
+                    .show()
+            }
+            // ...
+        }
     }
     Scaffold(topBar = {
         TopAppBar(

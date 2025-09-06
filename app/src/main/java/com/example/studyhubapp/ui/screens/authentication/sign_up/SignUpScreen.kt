@@ -57,7 +57,7 @@ fun SignUpScreen(
                 navController.navigate("LandingPage")
             }
 
-            is AuthState.UnAuthenticated -> {}
+            is AuthState.Unauthenticated -> {}
             is AuthState.Error -> {
                 /* show error */
                 Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_LONG)
