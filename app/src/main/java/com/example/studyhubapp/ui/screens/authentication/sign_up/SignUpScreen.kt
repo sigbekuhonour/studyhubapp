@@ -53,6 +53,7 @@ fun SignUpScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
+                Toast.makeText(context, "Authentication successful", Toast.LENGTH_LONG).show()
                 navController.navigate("LandingPage")
             }
 
@@ -94,7 +95,6 @@ fun SignUpScreen(
                 buttonText = "Create account",
                 onClick = {
                     viewModel.signUpWithEmail(email, password)
-                    viewModel.updateAuthStatus(AuthState.Authenticated)
                 }
             )
             SignInWithGoogleButton(
@@ -104,8 +104,7 @@ fun SignUpScreen(
                         context = context,
                         serverClientId = serverClientId,
                     )
-                    viewModel.updateAuthStatus(AuthState.Authenticated)
-                },
+                }
             )
             Row {
                 Text(text = "Do you already have an account?")

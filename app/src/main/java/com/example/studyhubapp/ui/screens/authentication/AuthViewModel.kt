@@ -73,7 +73,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             }
         }
     }
-    
+
     fun signInWithGoogle(context: Context, serverClientId: String) {
         viewModelScope.launch {
             try {

@@ -28,7 +28,6 @@ import com.example.studyhubapp.ui.component.button.CreateAccountButton
 import com.example.studyhubapp.ui.component.button.SignInWithGoogleButton
 import com.example.studyhubapp.ui.component.field.EmailTextField
 import com.example.studyhubapp.ui.component.field.PasswordTextField
-import com.example.studyhubapp.ui.screens.authentication.AuthState
 import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,7 +68,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(space = 20.dp)
         ) {
-            
+
             EmailTextField(title = email) {
                 email = it
             }
@@ -80,7 +79,6 @@ fun LoginScreen(
                 buttonText = "Login into account"
             ) {
                 viewModel.signInWithEmail(email, password)
-                viewModel.updateAuthStatus(AuthState.Authenticated)
             }
             SignInWithGoogleButton(
                 text = "Sign in with google",
@@ -89,7 +87,6 @@ fun LoginScreen(
                         context = context,
                         serverClientId = serverClientId,
                     )
-                    viewModel.updateAuthStatus(AuthState.Authenticated)
                 }
             )
         }
