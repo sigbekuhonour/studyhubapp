@@ -19,11 +19,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     //
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
-
-    fun updateAuthStatus(authStatus: AuthState) {
-        _authState.value = authStatus
-    }
-
+    
     fun signUpWithEmail(email: String, password: String) {
         viewModelScope.launch {
             try {

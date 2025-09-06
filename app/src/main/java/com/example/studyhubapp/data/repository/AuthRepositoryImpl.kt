@@ -90,17 +90,15 @@ class AuthRepositoryImpl : AuthRepository {
         email: String,
         password: String
     ): Flow<AuthResponse> = callbackFlow {
-        {
-            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    trySend(AuthResponse.Success)
-                } else {
-                    trySend(
-                        AuthResponse.Error(
-                            message = task.exception?.message ?: "Unknown error"
-                        )
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                trySend(AuthResponse.Success)
+            } else {
+                trySend(
+                    AuthResponse.Error(
+                        message = task.exception?.message ?: "Unknown error"
                     )
-                }
+                )
             }
         }
         awaitClose()
