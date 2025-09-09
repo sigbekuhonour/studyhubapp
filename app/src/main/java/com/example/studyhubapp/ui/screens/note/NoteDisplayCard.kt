@@ -12,7 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun NoteDisplayCard(notes: List<Note>, folderName: String, navController: NavController) {
+fun NoteDisplayCard(
+    notes: List<Note>,
+    folderName: String,
+    viewModel: NoteViewModel,
+    navController: NavController
+) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(color = MaterialTheme.colorScheme.inverseSurface)
@@ -23,6 +28,7 @@ fun NoteDisplayCard(notes: List<Note>, folderName: String, navController: NavCon
                 title = eachNotes.title,
                 content = eachNotes.content,
                 folderId = eachNotes.folderId,
+                viewModel = viewModel,
                 navController = navController
             )
             HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)

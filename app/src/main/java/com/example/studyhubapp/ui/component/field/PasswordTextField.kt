@@ -11,7 +11,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,7 +24,7 @@ fun PasswordTextField(
     title: String,
     onTitleChange: (String) -> Unit
 ) {
-    var isPasswordHidden by remember { mutableStateOf(true) }
+    var isPasswordHidden by rememberSaveable { mutableStateOf(true) }
     TextField(
         value = title,
         shape = MaterialTheme.shapes.medium,

@@ -18,7 +18,7 @@ fun ContentTextField(
             value = content,
             onValueChange = onContentChange,
             singleLine = false,
-            shape = MaterialTheme.shapes.large,
+            shape = MaterialTheme.shapes.medium,
             textStyle = MaterialTheme.typography.labelSmall,
             placeholder = { Text("Contents...") },
             modifier = Modifier

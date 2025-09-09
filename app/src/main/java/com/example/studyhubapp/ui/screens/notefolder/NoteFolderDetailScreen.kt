@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,7 +50,7 @@ fun NoteFolderDetailScreen(
     val actionText = if (isEnabled) "Done" else "Edit"
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val textFieldState = rememberTextFieldState()
-    var searchResults by remember { mutableStateOf(listOf<String>()) }
+    var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
     val folders = noteFolderViewModel.folders.collectAsState().value
 
     Scaffold(

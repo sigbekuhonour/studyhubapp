@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +26,7 @@ fun NoteRow(
     folderName: String,
     content: String?,
     folderId: Int,
+    viewModel: NoteViewModel,
     navController: NavController
 ) {
     Row(
@@ -32,7 +35,7 @@ fun NoteRow(
         modifier = Modifier.clickable { navController.navigate("Note/$folderName/$folderId/$title") }
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.note_icon),
+            imageVector = Icons.Filled.Menu,
             modifier = Modifier.padding(horizontal = 5.dp),
             tint = MaterialTheme.colorScheme.scrim,
             contentDescription = ""
@@ -58,6 +61,22 @@ fun NoteRow(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
+        Icon(
+            painter = painterResource(id = R.drawable.delete_icon),
+            modifier = Modifier
+                .padding(horizontal = 5.dp)
+                .clickable {
+                    viewModel.getNoteId(folderId, title)
+                        ?.let {
+                            viewModel.deleteNotesInFolderWithId(
+                                folderId = folderId,
+                                noteId = it
+                            )
+                        }
+                },
+            tint = MaterialTheme.colorScheme.scrim,
+            contentDescription = ""
+        )
     }
 }
 

@@ -19,7 +19,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +40,7 @@ fun NoteListDetailScreen(
 
     val textFieldState = rememberTextFieldState()
     val noOfNotes = viewModel.fetchNotesById(folderId).size
-    var searchResults by remember { mutableStateOf(listOf<String>()) }
+    var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
     //
     Scaffold(
         topBar = {
@@ -110,7 +110,9 @@ fun NoteListDetailScreen(
             Spacer(modifier = Modifier.padding(vertical = 20.dp))
             NoteDisplayCard(
                 folderName = folderName,
-                notes = viewModel.fetchNotesById(folderId), navController = navController
+                notes = viewModel.fetchNotesById(folderId),
+                viewModel = viewModel,
+                navController = navController
             )
         }
     }

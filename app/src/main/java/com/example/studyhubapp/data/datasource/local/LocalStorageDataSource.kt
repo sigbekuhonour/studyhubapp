@@ -1,28 +1,13 @@
 package com.example.studyhubapp.data.datasource.local
 
+import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-interface LocalStorageDataSource {
-    fun getAllFolders(): StateFlow<List<Folder>>
-    fun getAllNotes(): StateFlow<List<Note>>
-    suspend fun deleteFolderById(folderId: Int)
-    suspend fun deleteNoteById(folderId: Int, noteId: Int)
-    suspend fun addFolder(folder: Folder)
-    suspend fun addNote(note: Note)
-    suspend fun saveNoteChanges(
-        folderId: Int,
-        noteId: Int,
-        title: String? = null,
-        content: String? = null
-    )
 
-    suspend fun updateFolderName(folderId: Int, newFolderName: String)
-}
-
-class LocalStorageDataSourceImpl : LocalStorageDataSource {
+class LocalStorageDataSourceImpl : DataSource {
     private val _folders = MutableStateFlow<List<Folder>>(
         listOf(
             Folder(id = 0, title = "Quick Notes"),

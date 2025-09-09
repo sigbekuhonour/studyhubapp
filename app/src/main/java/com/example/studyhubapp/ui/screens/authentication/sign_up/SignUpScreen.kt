@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,8 +42,8 @@ fun SignUpScreen(
     viewModel: AuthViewModel,
     navController: NavController
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
@@ -55,6 +56,10 @@ fun SignUpScreen(
             is AuthState.Authenticated -> {
                 Toast.makeText(context, "Authentication successful", Toast.LENGTH_LONG).show()
                 navController.navigate("LandingPage")
+            }
+
+            is AuthState.Loading -> {
+                Toast.makeText(context, "Verifying credentials", Toast.LENGTH_SHORT).show()
             }
 
             is AuthState.Unauthenticated -> {}
@@ -93,12 +98,14 @@ fun SignUpScreen(
             }
             CreateAccountButton(
                 buttonText = "Create account",
+                authState = authState,
                 onClick = {
                     viewModel.signUpWithEmail(email, password)
                 }
             )
             SignInWithGoogleButton(
                 text = "Create account with google",
+                authState = authState,
                 onClick = {
                     viewModel.signInWithGoogle(
                         context = context,

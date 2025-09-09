@@ -18,7 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,12 +41,12 @@ fun LoginScreen(
     viewModel: AuthViewModel,
     navController: NavController
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val serverClientId = remember {
+    val serverClientId = rememberSaveable {
         context.getString(R.string.default_web_client_id)
     }
     LaunchedEffect(authState) {
@@ -54,6 +54,10 @@ fun LoginScreen(
             is AuthState.Authenticated -> {
                 Toast.makeText(context, "Authentication successful", Toast.LENGTH_LONG).show()
                 navController.navigate("LandingPage")
+            }
+
+            is AuthState.Loading -> {
+                Toast.makeText(context, "Verifying credentials", Toast.LENGTH_SHORT).show()
             }
 
             is AuthState.Unauthenticated -> {}
@@ -97,12 +101,14 @@ fun LoginScreen(
                 password = it
             }
             CreateAccountButton(
-                buttonText = "Login into account"
+                buttonText = "Login into account",
+                authState = authState
             ) {
                 viewModel.signInWithEmail(email, password)
             }
             SignInWithGoogleButton(
                 text = "Sign in with google",
+                authState = authState,
                 onClick = {
                     viewModel.signInWithGoogle(
                         context = context,

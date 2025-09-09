@@ -1,12 +1,12 @@
 package com.example.studyhubapp.data.repository
 
-import com.example.studyhubapp.data.datasource.local.LocalStorageDataSource
+import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.domain.model.Note
 import com.example.studyhubapp.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.StateFlow
 
-class NoteRepositoryImpl(private val dataSourceImpl: LocalStorageDataSource) : NoteRepository {
-    
+class NoteRepositoryImpl(private val dataSourceImpl: DataSource) : NoteRepository {
+
     override fun getNotes(): StateFlow<List<Note>> {
         return dataSourceImpl.getAllNotes()
     }

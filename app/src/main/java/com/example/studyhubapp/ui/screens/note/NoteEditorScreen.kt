@@ -23,7 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +49,8 @@ fun NoteEditorScreen(
     }
     val note = viewModel.getNoteById(folderId, viewModel.getNoteId(folderId, title))
 
-    var title by remember { mutableStateOf(note.title) }
-    var content by remember { mutableStateOf(note.content) }
+    var title by rememberSaveable { mutableStateOf(note.title) }
+    var content by rememberSaveable { mutableStateOf(note.content) }
     Scaffold(
         topBar = {
             TopAppBar(

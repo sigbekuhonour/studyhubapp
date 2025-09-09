@@ -1,13 +1,13 @@
 package com.example.studyhubapp.data.repository
 
-import com.example.studyhubapp.data.datasource.local.LocalStorageDataSource
+import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.repository.NoteFolderRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 
-class NoteFolderRepositoryImpl(private val dataSource: LocalStorageDataSource) :
+class NoteFolderRepositoryImpl(private val dataSource: DataSource) :
     NoteFolderRepository {
 
     override suspend fun getFolder(id: Int): Folder {

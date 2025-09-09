@@ -17,7 +17,7 @@ fun TitleTextField(
         value = title,
         onValueChange = onTitleChange,
         singleLine = true,
-        shape = MaterialTheme.shapes.extraLarge,
+        shape = MaterialTheme.shapes.large,
         textStyle = MaterialTheme.typography.titleMedium,
         placeholder = { Text("Title") },
         modifier = Modifier.fillMaxWidth()
