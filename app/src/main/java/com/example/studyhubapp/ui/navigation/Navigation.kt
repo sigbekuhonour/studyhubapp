@@ -8,10 +8,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.studyhubapp.data.datasource.local.LocalStorageDataSourceProvider
 import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.example.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.example.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
@@ -27,6 +29,8 @@ import com.example.studyhubapp.ui.screens.notefolder.RenameFolderScreen
 fun AppNav(modifier: Modifier) {
     ///nav controller
     val navController = rememberNavController()
+    val context = LocalContext.current
+    val dataSource = LocalStorageDataSourceProvider.instance
     NavHost(
         navController = navController,
         startDestination = "sign_up",
@@ -48,7 +52,7 @@ fun AppNav(modifier: Modifier) {
         }
         composable(route = "LandingPage") {
             val noteFolderViewModel: NoteFolderViewModel =
-                viewModel(factory = NoteFolderViewModel.Factory)
+                viewModel(factory = NoteFolderViewModel.Factory(dataSource))
             NoteFolderDetailScreen(
                 noteFolderViewModel = noteFolderViewModel,
                 navController = navController
@@ -58,7 +62,7 @@ fun AppNav(modifier: Modifier) {
             route = "NoteList/{folderName}/{folderId}",
             enterTransition = { slideInVertically() },
         ) { navBackStackEntry ->
-            val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+            val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory(dataSource))
             val folderName = navBackStackEntry.arguments?.getString("folderName")
             val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
             if (folderName != null) {
@@ -74,7 +78,7 @@ fun AppNav(modifier: Modifier) {
             route = "rename/{folderId}/{folderName}",
             enterTransition = { scaleIn() }) { navBackStackEntry ->
             val noteFolderViewModel: NoteFolderViewModel =
-                viewModel(factory = NoteFolderViewModel.Factory)
+                viewModel(factory = NoteFolderViewModel.Factory(dataSource))
             val folderName = navBackStackEntry.arguments?.getString("folderName")
             val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
             if (folderName != null && folderId != null) {
@@ -88,7 +92,7 @@ fun AppNav(modifier: Modifier) {
 
         }
         composable(route = "Note/{folderName}/{folderId}/{title}") { navBackStackEntry ->
-            val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory)
+            val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory(dataSource))
             val folderName = navBackStackEntry.arguments?.getString("folderName")
             val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
             val title = navBackStackEntry.arguments?.getString("title")

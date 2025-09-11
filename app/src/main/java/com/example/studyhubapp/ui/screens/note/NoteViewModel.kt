@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.studyhubapp.data.datasource.local.LocalStorageDataSourceProvider
+import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.data.repository.NoteRepositoryImpl
 import com.example.studyhubapp.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,13 +69,14 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     }
 
     companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                NoteViewModel(
-                    noteRepository = NoteRepositoryImpl(LocalStorageDataSourceProvider.instance)
-                )
+        fun Factory(dataSource: DataSource): ViewModelProvider.Factory =
+            viewModelFactory {
+                initializer {
+                    NoteViewModel(
+                        noteRepository = NoteRepositoryImpl(dataSource)
+                    )
+                }
             }
-        }
     }
 
 }

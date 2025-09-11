@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.R
-import com.example.studyhubapp.data.datasource.local.LocalStorageDataSourceProvider
+import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.data.repository.NoteFolderRepositoryImpl
 import com.example.studyhubapp.domain.repository.NoteFolderRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -70,10 +70,10 @@ class NoteFolderViewModel(
 
 
     companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
+        fun Factory(dataSource: DataSource): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 NoteFolderViewModel(
-                    folderRepository = NoteFolderRepositoryImpl(LocalStorageDataSourceProvider.instance)
+                    folderRepository = NoteFolderRepositoryImpl(dataSource)
                 )
             }
         }

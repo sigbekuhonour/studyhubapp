@@ -7,8 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "folders"
 )
-data class Folder(
-    @PrimaryKey val folderId: Int = 0,
-    val ownerUserId: String,
+data class FolderEntity(
+    @PrimaryKey(autoGenerate = true) val folderId: Int = 0,
     val title: String?
 )

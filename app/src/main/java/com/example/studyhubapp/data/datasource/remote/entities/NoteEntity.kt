@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "notes"
 )
-data class Note(
-    @PrimaryKey val noteId: Int,
+data class NoteEntity(
+    @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
     val ownerFolderId: Int,
     val title: String,
     val content: String
