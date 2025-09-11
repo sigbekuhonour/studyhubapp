@@ -87,7 +87,7 @@ fun NoteListDetailScreen(
                     Icon(
                         modifier = Modifier.clickable {
                             navController.navigate(
-                                "Note/$folderName/$folderId/New_Note"
+                                "Note/$folderName/$folderId/New_Note${notes.filter { note -> note.folderId == folderId }.size}"
                             )
                         },
                         painter = painterResource(id = R.drawable.add_notes),
