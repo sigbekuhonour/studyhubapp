@@ -28,11 +28,7 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
                 )
             }
         }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
-
-    fun fetchNotesById(folderId: Int?): List<Note> {
-        return notes.value.filter { eachNote -> eachNote.folderId == folderId }
-    }
-
+    
     fun getNoteById(
         folderId: Int,
         noteId: Int?

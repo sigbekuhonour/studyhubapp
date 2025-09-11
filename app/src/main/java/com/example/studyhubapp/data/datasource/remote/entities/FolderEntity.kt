@@ -9,5 +9,5 @@ import androidx.room.PrimaryKey
 )
 data class FolderEntity(
     @PrimaryKey(autoGenerate = true) val folderId: Int = 0,
-    val title: String?
+    val title: String
 )

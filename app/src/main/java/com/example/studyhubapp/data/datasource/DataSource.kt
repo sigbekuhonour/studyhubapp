@@ -2,11 +2,11 @@ package com.example.studyhubapp.data.datasource
 
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 interface DataSource {
-    fun getAllFolders(): StateFlow<List<Folder>>
-    fun getAllNotes(): StateFlow<List<Note>>
+    fun getAllFolders(): Flow<List<Folder>>
+    fun getAllNotes(): Flow<List<Note>>
     suspend fun deleteFolderById(folderId: Int)
     suspend fun deleteNoteById(folderId: Int, noteId: Int)
     suspend fun addFolder(folder: Folder)

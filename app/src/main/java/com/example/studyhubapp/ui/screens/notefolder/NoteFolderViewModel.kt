@@ -19,12 +19,12 @@ class NoteFolderViewModel(
     private val folderRepository: NoteFolderRepository
 ) : ViewModel() {
 
-    private var _folders = folderRepository.getFolders()
+    private var _folders = folderRepository.getAllFolders()
 
     val folders: StateFlow<List<Folder>>
         get() = _folders.map { folderList ->
             folderList.map { eachFolder ->
-                Folder(id = eachFolder.id, icon = getIcon(eachFolder), name = eachFolder.title)
+                Folder(id = eachFolder.id, icon = getIcon(eachFolder), title = eachFolder.title)
             }
         }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
 
@@ -42,11 +42,7 @@ class NoteFolderViewModel(
         }
         return icon
     }
-
-    fun getFolderId(name: String): Int {
-        return _folders.value.indexOfFirst { eachFolder -> eachFolder.title == name }
-    }
-
+    
     //add folder
     fun addFolder(name: String) {
         viewModelScope.launch {

@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,7 +40,9 @@ fun NoteListDetailScreen(
 ) {
 
     val textFieldState = rememberTextFieldState()
-    val noOfNotes = viewModel.fetchNotesById(folderId).size
+    val notes = viewModel.notes.collectAsState().value
+    val noOfNotes =
+        notes.filter { note -> note.folderId == folderId }.size
     var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
     //
     Scaffold(
@@ -110,7 +113,7 @@ fun NoteListDetailScreen(
             Spacer(modifier = Modifier.padding(vertical = 20.dp))
             NoteDisplayCard(
                 folderName = folderName,
-                notes = viewModel.fetchNotesById(folderId),
+                notes = notes.filter { note -> note.folderId == folderId },
                 viewModel = viewModel,
                 navController = navController
             )

@@ -1,12 +1,10 @@
 package com.example.studyhubapp.domain.repository
 
 import com.example.studyhubapp.domain.model.Note
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
-    suspend fun fetchNotes(folderId: Int): List<Note>
-    fun getNotes(): StateFlow<List<Note>>
-    suspend fun getNoteById(folderId: Int, noteId: Int): Note
+    fun getNotes(): Flow<List<Note>>
     suspend fun addNoteByFolderId(folderId: Int, title: String)
     suspend fun deleteNoteByFolderId(folderId: Int, noteId: Int)
     suspend fun saveNoteChanges(

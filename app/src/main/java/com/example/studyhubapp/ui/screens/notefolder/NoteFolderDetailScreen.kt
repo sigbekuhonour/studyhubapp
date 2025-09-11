@@ -94,7 +94,7 @@ fun NoteFolderDetailScreen(
                         icon = R.drawable.new_notes,
                         onClick = {
                             navController.navigate(
-                                "Note/${folders.first().name}/${folders.first().id}/New_Note"
+                                "Note/${folders.first().title}/${folders.first().id}/New_Note"
                             )
                         })
                 }
@@ -134,12 +134,12 @@ fun NoteFolderDetailScreen(
                         .collectAsState(initial = 0)
                     Log.i(
                         "NoteFolderDetailScreen",
-                        "Current size of ${eachFolder.name}: $noOfContents"
+                        "Current size of ${eachFolder.title}: $noOfContents"
                     )
                     FolderRow(
                         folderId = eachFolder.id,
                         icon = eachFolder.icon,
-                        folderName = eachFolder.name,
+                        folderName = eachFolder.title,
                         noteFolderContentSize = noOfContents,
                         isEnabled = isEnabled,
                         navController = navController,
