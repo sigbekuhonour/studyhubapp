@@ -3,15 +3,18 @@ package com.example.studyhubapp.data.datasource.local
 import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 
 class LocalStorageDataSourceImpl : DataSource {
     private val _folders = MutableStateFlow<List<Folder>>(
         listOf(
             Folder(id = 0, title = "Quick Notes"),
-            Folder(id = 1, title = "Shared Notes"), Folder(id = 2, title = "Deleted Notes")
+            Folder(id = 1, title = "Shared Notes"),
+            Folder(id = 2, title = "Deleted Notes")
         )
     )
     val folders: StateFlow<List<Folder>> = _folders
@@ -25,20 +28,17 @@ class LocalStorageDataSourceImpl : DataSource {
     )
     val notes: StateFlow<List<Note>> = _notes
 
-    override fun getAllFolders(): StateFlow<List<Folder>> {
-        return folders
-    }
+    override fun getAllFolders(): Flow<List<Folder>> = _folders
 
-    override fun getAllNotes(): StateFlow<List<Note>> {
-        return notes
-    }
+    override fun getAllNotes(): Flow<List<Note>> = _notes
 
     override suspend fun deleteFolderById(folderId: Int) {
-        _folders.value = _folders.value.filterNot { it.id == folderId }
+        if (folderId in setOf(0, 1, 2)) return
+        _folders.update { list -> list.filterNot { it.id == folderId } }
     }
 
     override suspend fun deleteNoteById(folderId: Int, noteId: Int) {
-        _notes.value = _notes.value.filterNot { it.id == noteId && it.folderId == folderId }
+        _notes.update { list -> list.filterNot { it.id == noteId } }
     }
 
     override suspend fun addFolder(folder: Folder) {

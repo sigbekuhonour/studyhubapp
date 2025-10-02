@@ -11,6 +11,7 @@ import com.example.studyhubapp.data.repository.NoteFolderRepositoryImpl
 import com.example.studyhubapp.domain.repository.NoteFolderRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -19,14 +20,13 @@ class NoteFolderViewModel(
     private val folderRepository: NoteFolderRepository
 ) : ViewModel() {
 
-    private var _folders = folderRepository.getAllFolders()
+    private var _folders = folderRepository.getAllFolders().distinctUntilChanged()
 
-    val folders: StateFlow<List<Folder>>
-        get() = _folders.map { folderList ->
-            folderList.map { eachFolder ->
-                Folder(id = eachFolder.id, icon = getIcon(eachFolder), title = eachFolder.title)
-            }
-        }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
+    val folders: StateFlow<List<Folder>> = _folders.map { folderList ->
+        folderList.map { eachFolder ->
+            Folder(id = eachFolder.id, icon = getIcon(eachFolder), title = eachFolder.title)
+        }
+    }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
 
     fun getFolderContentSize(folderId: Int): StateFlow<Int> {
         return folderRepository.getFolderContentSize(folderId)
@@ -42,7 +42,7 @@ class NoteFolderViewModel(
         }
         return icon
     }
-    
+
     //add folder
     fun addFolder(name: String) {
         viewModelScope.launch {

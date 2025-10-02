@@ -15,9 +15,18 @@ interface NoteDao {
     suspend fun addNote(notes: NoteEntity)
 
     @Query("DELETE FROM notes WHERE noteId = :noteId AND ownerFolderId = :folderId")
-    suspend fun deleteNoteById(noteId: Int, folderId: Int)
+    suspend fun deleteNoteById(folderId: Int, noteId: Int)
 
-    @Query("UPDATE notes SET title = :title,content = :content WHERE ownerFolderId = :folderId AND noteId = :noteId")
+    @Query(
+        """
+        UPDATE notes
+        SET
+            title = COALESCE(:title, title),
+            content = COALESCE(:content, content),
+            ownerFolderId = COALESCE(:folderId, ownerFolderId)
+        WHERE noteId = :noteId
+    """
+    )
     suspend fun saveNoteChanges(
         folderId: Int,
         noteId: Int,

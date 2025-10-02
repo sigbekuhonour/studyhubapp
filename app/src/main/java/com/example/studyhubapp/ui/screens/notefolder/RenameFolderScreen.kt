@@ -53,7 +53,7 @@ fun RenameFolderScreen(
             verticalArrangement = Arrangement.spacedBy(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Input new folder name")
+            Text(text = "Input new folder title")
             TitleTextField(title = folderName) { folderName = it }
             Button(
                 onClick = { viewModel.updateFolderName(folderId, currentFolderName = folderName) },

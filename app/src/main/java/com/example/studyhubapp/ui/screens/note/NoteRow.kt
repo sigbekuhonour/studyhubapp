@@ -1,5 +1,6 @@
 package com.example.studyhubapp.ui.screens.note
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -68,6 +69,10 @@ fun NoteRow(
                 .clickable {
                     viewModel.getNoteId(folderId, title)
                         ?.let {
+                            Log.d(
+                                "NoteViewModel",
+                                "deleteNotesInFolderWithId called: f=$folderId, id=$it"
+                            )
                             viewModel.deleteNotesInFolderWithId(
                                 folderId = folderId,
                                 noteId = it

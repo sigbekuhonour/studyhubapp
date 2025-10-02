@@ -4,15 +4,19 @@ import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.domain.model.Note
 import com.example.studyhubapp.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 
 class NoteRepositoryImpl(private val dataSourceImpl: DataSource) : NoteRepository {
 
-    override fun getNotes(): Flow<List<Note>> {
-        return dataSourceImpl.getAllNotes()
-    }
+    override fun getAllNotes(): Flow<List<Note>> =
+        dataSourceImpl.getAllNotes().distinctUntilChanged()
 
     override suspend fun addNoteByFolderId(folderId: Int, title: String) {
+        val exists = dataSourceImpl.getAllNotes()
+            .first()
+            .any { it.folderId == folderId && it.title == title.trim() }
+        if (exists) return
         val noteId = dataSourceImpl.getAllNotes().first().size
         dataSourceImpl.addNote(Note(id = noteId, folderId = folderId, title = title))
     }

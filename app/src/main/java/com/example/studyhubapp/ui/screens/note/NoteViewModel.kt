@@ -11,15 +11,16 @@ import com.example.studyhubapp.data.repository.NoteRepositoryImpl
 import com.example.studyhubapp.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
-    private var _notes = noteRepository.getNotes()
-    val notes: StateFlow<List<Note>>
-        get() = _notes.map { noteList ->
-            noteList.map { eachNote ->
+
+    private val _notes: StateFlow<List<Note>> =
+        noteRepository.getAllNotes().map { notes ->
+            notes.map { eachNote ->
                 Note(
                     id = eachNote.id,
                     folderId = eachNote.folderId,
@@ -27,14 +28,20 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
                     content = eachNote.content
                 )
             }
-        }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
-    
-    fun getNoteById(
+        }
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val notes: StateFlow<List<Note>> = _notes
+
+    fun getNoteByTitle(
         folderId: Int,
-        noteId: Int?
-    ): Note {
-        return notes.value.first { note -> note.id == noteId && note.folderId == folderId }
-    }
+        title: String
+    ): StateFlow<Note?> =
+        notes
+            .map { list -> list.firstOrNull { it.folderId == folderId && it.title == title } }
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     fun getNoteId(folderId: Int, title: String): Int? {
         return notes.value.firstOrNull { eachNote -> eachNote.folderId == folderId && eachNote.title == title }?.id

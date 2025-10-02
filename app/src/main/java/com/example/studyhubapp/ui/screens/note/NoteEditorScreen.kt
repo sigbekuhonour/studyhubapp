@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,13 +45,14 @@ fun NoteEditorScreen(
     viewModel: NoteViewModel,
     navController: NavController
 ) {
-    if (viewModel.getNoteId(folderId, title) == null) {
-        viewModel.addNotesToFolderWithId(folderId = folderId, title = title)
+    val note = viewModel.getNoteByTitle(folderId, title).collectAsState().value
+    var title by rememberSaveable { mutableStateOf("") }
+    var content: String? by rememberSaveable { mutableStateOf("") }
+    if (note != null) {
+        title = note.title
+        content = note.content
     }
-    val note = viewModel.getNoteById(folderId, viewModel.getNoteId(folderId, title))
 
-    var title by rememberSaveable { mutableStateOf(note.title) }
-    var content by rememberSaveable { mutableStateOf(note.content) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,12 +80,14 @@ fun NoteEditorScreen(
                             "NoteEditorScreen",
                             "These are the contents of notes before save${viewModel.notes.value}"
                         )
-                        viewModel.saveNoteChanges(
-                            folderId = folderId,
-                            noteId = note.id,
-                            title = title,
-                            content = content
-                        )
+                        note?.let {
+                            viewModel.saveNoteChanges(
+                                folderId = folderId,
+                                noteId = it.id,
+                                title = title,
+                                content = content
+                            )
+                        }
                         Log.i(
                             "NoteEditorScreen",
                             "These are the contents of notes after save${viewModel.notes.value}"

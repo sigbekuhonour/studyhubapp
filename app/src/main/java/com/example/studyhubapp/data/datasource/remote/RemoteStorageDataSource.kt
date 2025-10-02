@@ -12,26 +12,14 @@ import kotlinx.coroutines.flow.map
 
 class RemoteStorageDataSourceImpl(val folderDao: FolderDao, val noteDao: NoteDao) : DataSource {
 
-    override fun getAllFolders(): Flow<List<Folder>> {
-        return folderDao.getAllFolders().map { folderList ->
-            folderList.map { eachFolder ->
-                Folder(id = eachFolder.folderId, title = eachFolder.title)
-            }
+    override fun getAllFolders(): Flow<List<Folder>> =
+        folderDao.getAllFolders().map {
+            it.map(FolderEntity::toDomain)
         }
-    }
 
-    override fun getAllNotes(): Flow<List<Note>> {
-        return noteDao.getAllNotes().map { noteList ->
-            noteList.map { eachNote ->
-                Note(
-                    id = eachNote.noteId,
-                    title = eachNote.title,
-                    folderId = eachNote.ownerFolderId,
-                    content = eachNote.content
-                )
-            }
-        }
-    }
+
+    override fun getAllNotes(): Flow<List<Note>> =
+        noteDao.getAllNotes().map { it.map(NoteEntity::toDomain) }
 
     override suspend fun deleteFolderById(folderId: Int) {
         folderDao.deleteFolderById(folderId)
@@ -64,14 +52,15 @@ class RemoteStorageDataSourceImpl(val folderDao: FolderDao, val noteDao: NoteDao
 
 }
 
-private fun Folder.toEntity() = FolderEntity(
-    folderId = this.id ?: 0,
-    title = this.title,
-)
+private fun FolderEntity.toDomain() = Folder(id = folderId, title = title)
+private fun NoteEntity.toDomain() =
+    Note(id = noteId, title = title, content = content, folderId = ownerFolderId)
+
+private fun Folder.toEntity() = FolderEntity(folderId = 0, title = title)
 
 private fun Note.toEntity() = NoteEntity(
-    noteId = this.id,
-    title = this.title,
-    content = this.content,
-    ownerFolderId = this.folderId
+    noteId = 0,
+    title = title,
+    content = content,
+    ownerFolderId = folderId
 )

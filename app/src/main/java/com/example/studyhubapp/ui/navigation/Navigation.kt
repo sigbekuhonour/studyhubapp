@@ -7,13 +7,14 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.studyhubapp.data.datasource.local.LocalStorageDataSourceProvider
+import com.example.studyhubapp.data.datasource.remote.RemoteStorageDataSourceProvider
 import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.example.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.example.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
@@ -30,7 +31,7 @@ fun AppNav(modifier: Modifier) {
     ///nav controller
     val navController = rememberNavController()
     val context = LocalContext.current
-    val dataSource = LocalStorageDataSourceProvider.instance
+    val dataSource = RemoteStorageDataSourceProvider.getInstance(context)
     NavHost(
         navController = navController,
         startDestination = "sign_up",
@@ -93,19 +94,23 @@ fun AppNav(modifier: Modifier) {
         }
         composable(route = "Note/{folderName}/{folderId}/{title}") { navBackStackEntry ->
             val viewModel: NoteViewModel = viewModel(factory = NoteViewModel.Factory(dataSource))
-            val folderName = navBackStackEntry.arguments?.getString("folderName")
-            val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
-            val title = navBackStackEntry.arguments?.getString("title")
-            if (folderName != null && folderId != null && title != null) {
-                NoteEditorScreen(
-                    folderName = folderName,
-                    folderId = folderId,
-                    viewModel = viewModel,
-                    navController = navController,
-                    title = title
-                )
+            val folderName = requireNotNull(navBackStackEntry.arguments?.getString("folderName"))
+            val folderId =
+                requireNotNull(navBackStackEntry.arguments?.getString("folderId")?.toInt())
+            val title = requireNotNull(navBackStackEntry.arguments?.getString("title"))
+            LaunchedEffect(folderId, title) {
+                if (viewModel.getNoteId(folderId, title) == null) {
+                    viewModel.addNotesToFolderWithId(folderId, title)
+                }
             }
-
+            NoteEditorScreen(
+                folderName = folderName,
+                folderId = folderId,
+                viewModel = viewModel,
+                navController = navController,
+                title = title
+            )
         }
+
     }
 }

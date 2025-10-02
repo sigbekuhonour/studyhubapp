@@ -4,7 +4,7 @@ import com.example.studyhubapp.domain.model.Note
 import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
-    fun getNotes(): Flow<List<Note>>
+    fun getAllNotes(): Flow<List<Note>>
     suspend fun addNoteByFolderId(folderId: Int, title: String)
     suspend fun deleteNoteByFolderId(folderId: Int, noteId: Int)
     suspend fun saveNoteChanges(
