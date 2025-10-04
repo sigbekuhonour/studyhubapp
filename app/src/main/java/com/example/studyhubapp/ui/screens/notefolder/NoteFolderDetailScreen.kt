@@ -114,7 +114,8 @@ fun NoteFolderDetailScreen(
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
-                onSearch = {})
+                placeholderText = "folders",
+                onSearch = {},)
             if (newFolderButtonIsClicked) {
                 CreateNewFolderDialog(
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },

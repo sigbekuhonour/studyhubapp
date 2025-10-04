@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.media3.database)
+    implementation(libs.androidx.compose.foundation.layout)
     val room_version = "2.7.2"
     val nav_version = "2.9.3"
     ksp("androidx.room:room-compiler:2.7.2")
