@@ -17,6 +17,6 @@ interface FolderDao {
     @Query("DELETE FROM folders WHERE folderId = :id AND title NOT IN ('Quick Notes','Shared Notes','Deleted Notes')")
     suspend fun deleteFolderById(id: Int)
 
-    @Query("UPDATE folders SET title = :newFolderName WHERE folderId = :folderId")
+    @Query("UPDATE folders SET title = :newFolderName WHERE folderId = :folderId AND title NOT IN ('Quick Notes','Shared Notes','Deleted Notes')")
     suspend fun updateFolderName(newFolderName: String, folderId: Int)
 }
