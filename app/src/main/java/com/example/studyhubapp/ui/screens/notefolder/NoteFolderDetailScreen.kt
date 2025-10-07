@@ -128,7 +128,7 @@ fun NoteFolderDetailScreen(
                         icon = R.drawable.new_notes,
                         onClick = {
                             navController.navigate(
-                                "Note/${folders.first().title}/${folders.first().id}/New_Note${folders.size}"
+                                "Note/${folders.first().title}/${folders.first().id}/New_Note"
                             )
                         })
                 }
