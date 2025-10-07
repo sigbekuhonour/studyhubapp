@@ -97,7 +97,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         }
     }
 
-    fun signOut() {
+    fun signOut(): StateFlow<AuthState> {
         viewModelScope.launch {
             when (authRepository.signOut()) {
                 is AuthResponse.Success -> {
@@ -111,6 +111,11 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 }
             }
         }
+        return authState
+    }
+
+    fun isUserSignedIn(): Boolean {
+        return authRepository.isUserSignedIn()
     }
 
     companion object {

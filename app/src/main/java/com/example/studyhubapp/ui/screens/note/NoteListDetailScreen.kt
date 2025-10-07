@@ -109,7 +109,7 @@ fun NoteListDetailScreen(
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
-                placeholderText = "notes",
+                placeholderText = folderName,
                 onSearch = {})
             Spacer(modifier = Modifier.padding(vertical = 20.dp))
             NoteDisplayCard(

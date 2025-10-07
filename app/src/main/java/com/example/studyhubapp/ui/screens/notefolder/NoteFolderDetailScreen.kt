@@ -4,6 +4,7 @@ package com.example.studyhubapp.ui.screens.notefolder
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +13,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,12 +48,14 @@ import com.example.studyhubapp.ui.component.searchbar.SimpleSearchBar
 @OptIn(ExperimentalMaterial3Api::class)
 fun NoteFolderDetailScreen(
     noteFolderViewModel: NoteFolderViewModel,
-    navController: NavController
+    navController: NavController,
+    onSignOut: () -> Unit
 ) {
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
-    var isEnabled by rememberSaveable { mutableStateOf(false) }
-    val actionText = if (isEnabled) "Done" else "Edit"
+    var isActionTextClicked by rememberSaveable { mutableStateOf(false) }
+    var isSettingButtonClicked by rememberSaveable { mutableStateOf(false) }
+    val actionText = if (isActionTextClicked) "Done" else "Edit"
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val textFieldState = rememberTextFieldState()
     var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
@@ -72,10 +80,36 @@ fun NoteFolderDetailScreen(
                         text = actionText,
                         color = MaterialTheme.colorScheme.scrim,
                         modifier = Modifier.clickable {
-                            isEnabled = !isEnabled
+                            isActionTextClicked = !isActionTextClicked
                         },
                         fontSize = 20.sp
                     )
+                    Spacer(
+                        modifier = Modifier.padding(
+                            end = 10.dp
+                        )
+                    )
+                    Box {
+                        Icon(
+                            imageVector = Icons.Sharp.Settings,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                isSettingButtonClicked = !isSettingButtonClicked
+                            })
+                        DropdownMenu(
+                            expanded = isSettingButtonClicked,
+                            shape = MaterialTheme.shapes.large,
+                            onDismissRequest = { isSettingButtonClicked = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Sign Out") },
+                                onClick = {
+                                    isSettingButtonClicked = false
+                                    onSignOut()
+                                }
+                            )
+                        }
+                    }
                 },
                 scrollBehavior = scrollBehavior
             )
@@ -115,7 +149,8 @@ fun NoteFolderDetailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
                 placeholderText = "folders",
-                onSearch = {},)
+                onSearch = {},
+            )
             if (newFolderButtonIsClicked) {
                 CreateNewFolderDialog(
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
@@ -142,7 +177,7 @@ fun NoteFolderDetailScreen(
                         icon = eachFolder.icon,
                         folderName = eachFolder.title,
                         noteFolderContentSize = noOfContents,
-                        isEnabled = isEnabled,
+                        isActionTextClicked = isActionTextClicked,
                         navController = navController,
                         onDeleteClick = { noteFolderViewModel.deleteFolder(eachFolder.id) }
                     )

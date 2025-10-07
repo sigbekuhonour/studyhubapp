@@ -22,6 +22,7 @@ class RemoteStorageDataSourceImpl(val folderDao: FolderDao, val noteDao: NoteDao
         noteDao.getAllNotes().map { it.map(NoteEntity::toDomain) }
 
     override suspend fun deleteFolderById(folderId: Int) {
+
         folderDao.deleteFolderById(folderId)
     }
 

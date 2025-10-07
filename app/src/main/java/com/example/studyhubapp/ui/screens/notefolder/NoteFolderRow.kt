@@ -38,7 +38,7 @@ fun FolderRow(
     folderId: Int,
     folderName: String,
     noteFolderContentSize: Int,
-    isEnabled: Boolean,
+    isActionTextClicked: Boolean,
     navController: NavController,
     onDeleteClick: () -> Unit
 ) {
@@ -49,7 +49,7 @@ fun FolderRow(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .clickable(enabled = !isEnabled) {
+            .clickable(enabled = !isActionTextClicked) {
                 navController.navigate("NoteList/$folderName/$folderId")
             }
 
@@ -65,7 +65,7 @@ fun FolderRow(
         NoteFolderRowIcon(icon)
         NoteFolderRowText(folderName = folderName, modifier = Modifier.padding(start = 25.dp))
         Spacer(modifier = Modifier.weight(1f))
-        if (!isEnabled) {
+        if (!isActionTextClicked) {
             NoteFolderRowText(folderName = noteFolderContentSize.toString())
 
             Box {

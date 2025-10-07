@@ -104,6 +104,10 @@ class AuthRepositoryImpl : AuthRepository {
         awaitClose()
     }
 
+    override fun isUserSignedIn(): Boolean {
+        return auth.currentUser != null
+    }
+
     override suspend fun signOut(): AuthResponse {
         return try {
             auth.signOut()
