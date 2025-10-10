@@ -123,7 +123,6 @@ fun AppNav(modifier: Modifier) {
         composable(route = "flashcards") {
             FlashCardListDetailScreen(navController = navController)
         }
-
     }
 }
 
