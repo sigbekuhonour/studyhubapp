@@ -20,6 +20,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -84,18 +85,14 @@ fun NoteFolderDetailScreen(
                         },
                         fontSize = 20.sp
                     )
-                    Spacer(
-                        modifier = Modifier.padding(
-                            end = 10.dp
-                        )
-                    )
+
                     Box {
-                        Icon(
-                            imageVector = Icons.Sharp.Settings,
-                            contentDescription = null,
-                            modifier = Modifier.clickable {
-                                isSettingButtonClicked = !isSettingButtonClicked
-                            })
+                        IconButton(onClick = { isSettingButtonClicked = !isSettingButtonClicked }) {
+                            Icon(
+                                imageVector = Icons.Sharp.Settings,
+                                contentDescription = null
+                            )
+                        }
                         DropdownMenu(
                             expanded = isSettingButtonClicked,
                             shape = MaterialTheme.shapes.large,

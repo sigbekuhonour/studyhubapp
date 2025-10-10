@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -83,17 +84,21 @@ fun NoteListDetailScreen(
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
                     Text(text = "$noOfNotes note(s) in this folder")
-                    Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        modifier = Modifier.clickable {
+                    Spacer(modifier = Modifier.weight(0.5f))
+                    IconButton(
+                        onClick = {
                             navController.navigate(
                                 "Note/$folderName/$folderId/New_Note${notes.filter { note -> note.folderId == folderId }.size}"
                             )
                         },
-                        painter = painterResource(id = R.drawable.add_notes),
-                        tint = MaterialTheme.colorScheme.scrim,
-                        contentDescription = ""
-                    )
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.add_notes),
+                            tint = MaterialTheme.colorScheme.scrim,
+                            contentDescription = ""
+                        )
+                    }
+
                 }
             }
         },

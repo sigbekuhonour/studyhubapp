@@ -1,14 +1,14 @@
 package com.example.studyhubapp.ui.screens.note
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DividerDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
@@ -20,7 +20,8 @@ fun NoteDisplayCard(
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.background(color = MaterialTheme.colorScheme.inverseSurface)
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary)
     ) {
         items(items = notes) { eachNotes ->
             NoteRow(
@@ -31,7 +32,6 @@ fun NoteDisplayCard(
                 viewModel = viewModel,
                 navController = navController
             )
-            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
         }
     }
 }
