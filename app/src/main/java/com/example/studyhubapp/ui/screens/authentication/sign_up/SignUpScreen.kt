@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.studyhubapp.R
 import com.example.studyhubapp.ui.component.button.CreateAccountButton
@@ -44,17 +44,20 @@ fun SignUpScreen(
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
+    val authState by viewModel.authState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
     val serverClientId = remember {
         context.getString(R.string.default_web_client_id)
     }
-
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                Toast.makeText(context, "Authentication successful", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    "Authentication successful",
+                    Toast.LENGTH_SHORT
+                ).show()
                 navController.navigate("LandingPage")
             }
 
@@ -65,7 +68,7 @@ fun SignUpScreen(
             is AuthState.Unauthenticated -> {}
             is AuthState.Error -> {
                 /* show error */
-                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_LONG)
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT)
                     .show()
             }
             // ...

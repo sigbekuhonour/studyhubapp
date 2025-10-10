@@ -22,6 +22,7 @@ import java.util.UUID
 class AuthRepositoryImpl : AuthRepository {
     private val auth = Firebase.auth
 
+
     override suspend fun signInWithGoogle(
         context: Context,
         serverClientId: String,
@@ -49,19 +50,21 @@ class AuthRepositoryImpl : AuthRepository {
                                     googleIdTokenCredential.idToken,
                                     null
                                 )
+
                             auth.signInWithCredential(firebaseCredential).addOnCompleteListener {
                                 if (it.isSuccessful) {
                                     trySend(AuthResponse.Success)
                                 } else {
                                     trySend(
                                         AuthResponse.Error(
-                                            message = it.exception?.message ?: ""
+                                            message = it.exception?.message
+                                                ?: "An error occurred while attempting to create a new account using this Google account."
                                         )
                                     )
                                 }
                             }
                         } catch (e: GoogleIdTokenParsingException) {
-                            trySend(AuthResponse.Error(message = e.message ?: ""))
+                            trySend(AuthResponse.Error(message = e.message ?: "Unknown error"))
                         }
 
                     }

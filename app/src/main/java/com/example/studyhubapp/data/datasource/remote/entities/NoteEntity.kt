@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
             entity = FolderEntity::class,
             parentColumns = ["folderId"],
             childColumns = ["ownerFolderId"],
-            onDelete = ForeignKey.CASCADE // or NO_ACTION if you’ll recycle manually
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index("ownerFolderId")]

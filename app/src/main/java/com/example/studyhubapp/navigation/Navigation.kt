@@ -19,6 +19,7 @@ import com.example.studyhubapp.data.datasource.remote.RemoteStorageDataSourcePro
 import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.example.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.example.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
+import com.example.studyhubapp.ui.screens.flashcards.FlashCardListDetailScreen
 import com.example.studyhubapp.ui.screens.note.NoteEditorScreen
 import com.example.studyhubapp.ui.screens.note.NoteListDetailScreen
 import com.example.studyhubapp.ui.screens.note.NoteViewModel
@@ -29,29 +30,27 @@ import com.example.studyhubapp.ui.screens.notefolder.RenameFolderScreen
 
 @Composable
 fun AppNav(modifier: Modifier) {
-    ///nav controller
     val navController = rememberNavController()
     val context = LocalContext.current
     val dataSource = RemoteStorageDataSourceProvider.getInstance(context)
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory)
+
     NavHost(
         navController = navController,
-        startDestination = "sign_up",
+        startDestination = if (authViewModel.isUserSignedIn()) "LandingPage" else "signup",
         enterTransition = { fadeIn() + slideInHorizontally() },
         exitTransition = { fadeOut() + slideOutHorizontally() }) {
-        composable(route = "sign_up") {
-            if (authViewModel.isUserSignedIn()) {
-                navController.navigate("LandingPage")
-            }
+
+        composable(route = "signup") {
             SignUpScreen(
                 viewModel = authViewModel,
-                navController = navController
+                navController = navController,
             )
         }
         composable(route = "login") {
             LoginScreen(
                 viewModel = authViewModel,
-                navController = navController
+                navController = navController,
             )
         }
         composable(route = "LandingPage") {
@@ -62,7 +61,9 @@ fun AppNav(modifier: Modifier) {
                 navController = navController,
                 onSignOut = {
                     authViewModel.signOut()
-                    navController.navigate("sign_up")
+                    navController.navigate("signup") {
+                        popUpTo(0) { inclusive = true }
+                    }
                     Toast.makeText(context, "Sign out successful", Toast.LENGTH_SHORT).show()
                 }
             )
@@ -118,6 +119,9 @@ fun AppNav(modifier: Modifier) {
                 navController = navController,
                 title = title
             )
+        }
+        composable(route = "flashcards") {
+            FlashCardListDetailScreen(navController = navController)
         }
 
     }

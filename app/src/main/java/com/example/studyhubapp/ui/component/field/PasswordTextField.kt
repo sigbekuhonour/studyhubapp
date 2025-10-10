@@ -14,7 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.studyhubapp.R
@@ -38,7 +41,10 @@ fun PasswordTextField(
         singleLine = true,
         textStyle = MaterialTheme.typography.titleMedium,
         placeholder = { Text("Password") },
-        modifier = Modifier.fillMaxWidth(), trailingIcon = {
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { contentType = ContentType.Password },
+        trailingIcon = {
             if (isPasswordHidden) {
                 Icon(
                     painter = painterResource(id = R.drawable.not_visible),

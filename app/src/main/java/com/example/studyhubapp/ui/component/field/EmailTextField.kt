@@ -9,6 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 
 
 @Composable
@@ -24,6 +27,8 @@ fun EmailTextField(
         singleLine = true,
         textStyle = MaterialTheme.typography.titleMedium,
         placeholder = { Text("Email") },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { contentType = ContentType.EmailAddress }
     )
 }

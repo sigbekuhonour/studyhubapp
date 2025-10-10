@@ -44,7 +44,7 @@ fun NoteListDetailScreen(
     val noOfNotes =
         notes.filter { note -> note.folderId == folderId }.size
     var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
-    //
+
     Scaffold(
         topBar = {
             TopAppBar(

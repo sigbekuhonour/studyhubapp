@@ -43,8 +43,8 @@ fun LoginScreen(
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val authState by viewModel.authState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val serverClientId = rememberSaveable {
         context.getString(R.string.default_web_client_id)
@@ -52,7 +52,7 @@ fun LoginScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                Toast.makeText(context, "Authentication successful", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
                 navController.navigate("LandingPage")
             }
 
@@ -62,11 +62,9 @@ fun LoginScreen(
 
             is AuthState.Unauthenticated -> {}
             is AuthState.Error -> {
-                /* show error */
-                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_LONG)
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT)
                     .show()
             }
-            // ...
         }
     }
     Scaffold(topBar = {
@@ -80,7 +78,7 @@ fun LoginScreen(
             navigationIcon = {
                 Icon(
                     painter = painterResource(R.drawable.arrow_back),
-                    modifier = Modifier.clickable { navController.navigate("sign_up") },
+                    modifier = Modifier.clickable { navController.navigate("signup") },
                     contentDescription = null
                 )
             },
