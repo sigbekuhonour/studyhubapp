@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 @Composable
 fun FlashCardListDetailScreen(
     modifier: Modifier = Modifier,
-    flashcardViewModel: FlashCardViewmodel,
+    viewModel: FlashcardViewModel,
     navController: NavController
 ) {
     Scaffold(

@@ -19,6 +19,8 @@ import com.example.studyhubapp.data.datasource.remote.RemoteStorageDataSourcePro
 import com.example.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.example.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.example.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
+import com.example.studyhubapp.ui.screens.flashcards.FlashCardListDetailScreen
+import com.example.studyhubapp.ui.screens.flashcards.FlashcardViewModel
 import com.example.studyhubapp.ui.screens.note.NoteEditorScreen
 import com.example.studyhubapp.ui.screens.note.NoteListDetailScreen
 import com.example.studyhubapp.ui.screens.note.NoteViewModel
@@ -120,7 +122,9 @@ fun AppNav(modifier: Modifier) {
             )
         }
         composable(route = "flashcards") {
-//            FlashCardListDetailScreen(navController = navController)
+            val viewModel: FlashcardViewModel =
+                viewModel(factory = FlashcardViewModel.Factory(dataSource))
+            FlashCardListDetailScreen(navController = navController, viewModel = viewModel)
         }
     }
 }
