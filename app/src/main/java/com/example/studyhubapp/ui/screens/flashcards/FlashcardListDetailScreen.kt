@@ -3,6 +3,8 @@ package com.example.studyhubapp.ui.screens.flashcards
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.sharp.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,7 +20,11 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FlashCardListDetailScreen(modifier: Modifier = Modifier, navController: NavController) {
+fun FlashCardListDetailScreen(
+    modifier: Modifier = Modifier,
+    flashcardViewModel: FlashCardViewmodel,
+    navController: NavController
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -42,6 +48,12 @@ fun FlashCardListDetailScreen(modifier: Modifier = Modifier, navController: NavC
             )
         }, containerColor = MaterialTheme.colorScheme.onPrimary
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) { }
+        val pagerState = rememberPagerState(pageCount = { 10 })
+        Column(modifier = Modifier.padding(paddingValues)) {
+            HorizontalPager(state = pagerState) {
+                FlashcardItem()
+            }
+        }
     }
 }
+

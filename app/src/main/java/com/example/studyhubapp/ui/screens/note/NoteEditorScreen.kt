@@ -52,7 +52,6 @@ fun NoteEditorScreen(
         title = note.title
         content = note.content
     }
-
     Scaffold(
         topBar = {
             TopAppBar(

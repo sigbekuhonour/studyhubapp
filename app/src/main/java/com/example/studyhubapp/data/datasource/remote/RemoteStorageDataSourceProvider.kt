@@ -8,7 +8,8 @@ object RemoteStorageDataSourceProvider {
         val db = StudyHubDatabase.getDatabase(context)
         return RemoteStorageDataSourceImpl(
             folderDao = db.folderDao(),
-            noteDao = db.noteDao()
+            noteDao = db.noteDao(),
+            flashcardDao = db.flashcardDao()
         )
     }
 }

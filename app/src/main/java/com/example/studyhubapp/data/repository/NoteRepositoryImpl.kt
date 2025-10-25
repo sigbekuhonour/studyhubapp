@@ -13,10 +13,6 @@ class NoteRepositoryImpl(private val dataSourceImpl: DataSource) : NoteRepositor
         dataSourceImpl.getAllNotes().distinctUntilChanged()
 
     override suspend fun addNoteByFolderId(folderId: Int, title: String) {
-        val exists = dataSourceImpl.getAllNotes()
-            .first()
-            .any { it.folderId == folderId && it.title == title.trim() }
-        if (exists) return
         val noteId = dataSourceImpl.getAllNotes().first().size
         dataSourceImpl.addNote(Note(id = noteId, folderId = folderId, title = title))
     }

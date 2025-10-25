@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.withTransaction
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.studyhubapp.data.datasource.remote.dao.FlashcardDao
 import com.example.studyhubapp.data.datasource.remote.dao.FolderDao
 import com.example.studyhubapp.data.datasource.remote.dao.NoteDao
 import com.example.studyhubapp.data.datasource.remote.entities.FolderEntity
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 abstract class StudyHubDatabase : RoomDatabase() {
     abstract fun folderDao(): FolderDao
     abstract fun noteDao(): NoteDao
+    abstract fun flashcardDao(): FlashcardDao
 
     companion object {
         const val NAME = "StudyHub_DB"

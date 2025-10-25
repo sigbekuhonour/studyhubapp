@@ -1,5 +1,6 @@
 package com.example.studyhubapp.data.datasource
 
+import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
 import kotlinx.coroutines.flow.Flow
@@ -7,10 +8,14 @@ import kotlinx.coroutines.flow.Flow
 interface DataSource {
     fun getAllFolders(): Flow<List<Folder>>
     fun getAllNotes(): Flow<List<Note>>
+    fun getAllFlashcards(): Flow<List<Flashcard>>
     suspend fun deleteFolderById(folderId: Int)
+    suspend fun deleteFlashcardById(flashcardId: Int, noteId: Int)
     suspend fun deleteNoteById(folderId: Int, noteId: Int)
     suspend fun addFolder(folder: Folder)
+    suspend fun addFlashcard(flashcard: Flashcard)
     suspend fun addNote(note: Note)
+    suspend fun updateFlashcardContent(newContent: String, id: Int)
     suspend fun saveNoteChanges(
         folderId: Int,
         noteId: Int,

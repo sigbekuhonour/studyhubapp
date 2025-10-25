@@ -1,11 +1,11 @@
 package com.example.studyhubapp.data.datasource.local
 
 import com.example.studyhubapp.data.datasource.DataSource
+import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 
@@ -17,7 +17,6 @@ class LocalStorageDataSourceImpl : DataSource {
             Folder(id = 2, title = "Deleted Notes")
         )
     )
-    val folders: StateFlow<List<Folder>> = _folders
     private val _notes = MutableStateFlow<List<Note>>(
         listOf(
             Note(id = 0, folderId = 0, title = "First Note", content = "First content"),
@@ -26,15 +25,23 @@ class LocalStorageDataSourceImpl : DataSource {
             Note(id = 3, folderId = 2, title = "Fourth Note", content = "Fourth content etc")
         )
     )
-    val notes: StateFlow<List<Note>> = _notes
+
+    private val _flashcards = MutableStateFlow<List<Flashcard>>(
+        listOf(Flashcard(id = 0, ownerNoteId = 0, content = "My first flashcard"))
+    )
+
 
     override fun getAllFolders(): Flow<List<Folder>> = _folders
-
     override fun getAllNotes(): Flow<List<Note>> = _notes
+    override fun getAllFlashcards(): Flow<List<Flashcard>> = _flashcards
 
     override suspend fun deleteFolderById(folderId: Int) {
         if (folderId in setOf(0, 1, 2)) return
         _folders.update { list -> list.filterNot { it.id == folderId } }
+    }
+
+    override suspend fun deleteFlashcardById(flashcardId: Int, noteId: Int) {
+        _flashcards.update { list -> list.filterNot { it.id == flashcardId && it.ownerNoteId == noteId } }
     }
 
     override suspend fun deleteNoteById(folderId: Int, noteId: Int) {
@@ -45,8 +52,22 @@ class LocalStorageDataSourceImpl : DataSource {
         _folders.value = _folders.value + folder
     }
 
+    override suspend fun addFlashcard(flashcard: Flashcard) {
+        _flashcards.value = _flashcards.value + flashcard
+    }
+
     override suspend fun addNote(note: Note) {
         _notes.value = _notes.value + note
+    }
+
+    override suspend fun updateFlashcardContent(newContent: String, id: Int) {
+        _flashcards.value = _flashcards.value.map { eachFlashcard ->
+            if (eachFlashcard.id == id) {
+                eachFlashcard.copy(content = newContent)
+            } else {
+                eachFlashcard
+            }
+        }
     }
 
     override suspend fun saveNoteChanges(
