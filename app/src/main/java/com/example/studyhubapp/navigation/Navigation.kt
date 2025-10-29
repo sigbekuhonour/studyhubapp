@@ -108,10 +108,8 @@ fun AppNav(modifier: Modifier) {
             val folderId =
                 requireNotNull(navBackStackEntry.arguments?.getString("folderId")?.toInt())
             val title = requireNotNull(navBackStackEntry.arguments?.getString("title"))
-            LaunchedEffect(folderId, title) {
-                if (viewModel.getNoteId(folderId, title) == null) {
-                    viewModel.addNotesToFolderWithId(folderId, title)
-                }
+            LaunchedEffect(Unit) {
+                viewModel.initializeNote(folderId, title)
             }
             NoteEditorScreen(
                 folderName = folderName,
@@ -121,10 +119,15 @@ fun AppNav(modifier: Modifier) {
                 title = title
             )
         }
-        composable(route = "flashcards") {
+        composable(route = "flashcards/{noteId}") { navBackStackEntry ->
             val viewModel: FlashcardViewModel =
                 viewModel(factory = FlashcardViewModel.Factory(dataSource))
-            FlashCardListDetailScreen(navController = navController, viewModel = viewModel)
+            val noteId = requireNotNull(navBackStackEntry.arguments?.getString("noteId")).toInt()
+            FlashCardListDetailScreen(
+                noteId = noteId,
+                viewModel = viewModel,
+                navController = navController
+            )
         }
     }
 }

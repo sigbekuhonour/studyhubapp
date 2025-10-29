@@ -70,7 +70,7 @@ fun FolderRow(
 
             Box {
                 Icon(
-                    Icons.Default.MoreVert,
+                    imageVector = Icons.Default.MoreVert,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.clickable { expanded = !expanded },
                     contentDescription = "More options"

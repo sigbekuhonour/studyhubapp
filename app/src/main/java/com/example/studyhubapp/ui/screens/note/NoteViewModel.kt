@@ -9,12 +9,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.data.datasource.DataSource
 import com.example.studyhubapp.data.repository.NoteRepositoryImpl
 import com.example.studyhubapp.domain.repository.NoteRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
 
@@ -43,8 +45,22 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
             .distinctUntilChanged()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    fun getNoteId(folderId: Int, title: String): Int? {
-        return notes.value.firstOrNull { eachNote -> eachNote.folderId == folderId && eachNote.title == title }?.id
+    suspend fun getNoteId(folderId: Int, title: String): Int? {
+        return withContext(Dispatchers.IO) {
+            noteRepository.getNoteId(folderId, title)
+        }
+    }
+
+    fun initializeNote(folderId: Int, title: String) {
+        viewModelScope.launch {
+            val noteId = getNoteId(folderId, title)
+            if (noteId == null) {
+                Log.d("NoteViewModel", "Creating new note: $title in folder $folderId")
+                addNotesToFolderWithId(folderId, title)
+            } else {
+                Log.d("NoteViewModel", "Note already exists: $noteId")
+            }
+        }
     }
 
     fun saveNoteChanges(

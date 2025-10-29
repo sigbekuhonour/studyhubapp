@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.studyhubapp.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun NoteRow(
@@ -32,6 +34,7 @@ fun NoteRow(
     viewModel: NoteViewModel,
     navController: NavController
 ) {
+    val scope = rememberCoroutineScope()
     ElevatedCard(
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inverseSurface),
@@ -72,17 +75,20 @@ fun NoteRow(
                 modifier = Modifier
                     .padding(horizontal = 5.dp)
                     .clickable {
-                        viewModel.getNoteId(folderId, title)
-                            ?.let {
-                                Log.d(
-                                    "NoteViewModel",
-                                    "deleteNotesInFolderWithId called: f=$folderId, id=$it"
-                                )
-                                viewModel.deleteNotesInFolderWithId(
-                                    folderId = folderId,
-                                    noteId = it
-                                )
-                            }
+                        scope.launch {
+                            viewModel.getNoteId(folderId, title)
+                                ?.let {
+                                    Log.d(
+                                        "NoteViewModel",
+                                        "deleted Notes with: folderId=$folderId, noteId=$it"
+                                    )
+                                    viewModel.deleteNotesInFolderWithId(
+                                        folderId = folderId,
+                                        noteId = it
+                                    )
+                                }
+                        }
+
                     },
                 tint = MaterialTheme.colorScheme.scrim,
                 contentDescription = ""

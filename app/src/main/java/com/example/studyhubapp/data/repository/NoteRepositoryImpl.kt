@@ -12,6 +12,11 @@ class NoteRepositoryImpl(private val dataSourceImpl: DataSource) : NoteRepositor
     override fun getAllNotes(): Flow<List<Note>> =
         dataSourceImpl.getAllNotes().distinctUntilChanged()
 
+    override suspend fun getNoteId(folderId: Int, title: String): Int? =
+        dataSourceImpl.getAllNotes().first()
+            .firstOrNull { note -> note.folderId == folderId && note.title == title }?.id
+    
+
     override suspend fun addNoteByFolderId(folderId: Int, title: String) {
         val noteId = dataSourceImpl.getAllNotes().first().size
         dataSourceImpl.addNote(Note(id = noteId, folderId = folderId, title = title))

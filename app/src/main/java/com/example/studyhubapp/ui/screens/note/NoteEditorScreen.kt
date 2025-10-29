@@ -124,7 +124,7 @@ fun NoteEditorScreen(
                 Icon(imageVector = Icons.Sharp.Favorite, contentDescription = null)
                 Text(
                     text = "Review Cards", modifier = Modifier
-                        .clickable { navController.navigate("flashcards") }
+                        .clickable { navController.navigate("flashcards/${note?.id}") }
                         .background(
                             brush = Brush.linearGradient(
                                 listOf(

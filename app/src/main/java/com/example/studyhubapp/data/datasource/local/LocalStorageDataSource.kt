@@ -27,7 +27,10 @@ class LocalStorageDataSourceImpl : DataSource {
     )
 
     private val _flashcards = MutableStateFlow<List<Flashcard>>(
-        listOf(Flashcard(id = 0, ownerNoteId = 0, content = "My first flashcard"))
+        listOf(
+            Flashcard(id = 0, ownerNoteId = 0, content = "My first flashcard"),
+            Flashcard(id = 1, ownerNoteId = 0, content = "My second flashcard")
+        )
     )
 
 

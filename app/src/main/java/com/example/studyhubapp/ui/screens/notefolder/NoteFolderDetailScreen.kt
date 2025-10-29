@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import com.example.studyhubapp.R
+import com.example.studyhubapp.ui.component.dialog.SimpleDialog
 import com.example.studyhubapp.ui.component.icons.BottomAppBarIcon
 import com.example.studyhubapp.ui.component.searchbar.SimpleSearchBar
 
@@ -149,7 +150,11 @@ fun NoteFolderDetailScreen(
                 onSearch = {},
             )
             if (newFolderButtonIsClicked) {
-                CreateNewFolderDialog(
+                SimpleDialog(
+                    dialogHeader = "Create New Folder",
+                    labelText = "Folder Name",
+                    isSingleLine = true,
+                    confirmButtonText = "Create New Folder",
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
                     onConfirm = { newFolderName ->
                         noteFolderViewModel.addFolder(newFolderName)

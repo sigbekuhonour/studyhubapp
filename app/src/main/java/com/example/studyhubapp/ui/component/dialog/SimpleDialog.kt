@@ -1,4 +1,4 @@
-package com.example.studyhubapp.ui.screens.notefolder
+package com.example.studyhubapp.ui.component.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,34 +17,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.window.Dialog
 
 @Composable
-fun CreateNewFolderDialog(
+fun SimpleDialog(
+    dialogHeader: String,
+    labelText: String,
+    isSingleLine: Boolean,
+    confirmButtonText: String,
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var folderName by rememberSaveable { mutableStateOf("") }
+    var newValueToBeAdded by rememberSaveable { mutableStateOf("") }
     Dialog(onDismissRequest = { onDismiss() }) {
         Surface(shape = MaterialTheme.shapes.extraLarge) {
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Create New Folder", style = MaterialTheme.typography.titleLarge)
+                Text(text = dialogHeader, style = MaterialTheme.typography.titleLarge)
                 TextField(
-                    value = folderName,
-                    onValueChange = { folderName = it },
-                    label = { Text("Folder Name") },
-                    singleLine = true
+                    value = newValueToBeAdded,
+                    onValueChange = { newValueToBeAdded = it },
+                    label = { Text(text = labelText) },
+                    singleLine = isSingleLine
                 )
                 Button(
                     onClick = {
-                        if (folderName.isNotBlank()) {
-                            onConfirm(folderName)
+                        if (newValueToBeAdded.isNotBlank()) {
+                            onConfirm(newValueToBeAdded)
                             onDismiss()
                         }
                     },
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.outline)
                 ) {
-                    Text(text = "Create New Folder", color = MaterialTheme.colorScheme.scrim)
+                    Text(text = confirmButtonText, color = MaterialTheme.colorScheme.scrim)
                 }
                 Button(
                     onClick = { onDismiss() },
