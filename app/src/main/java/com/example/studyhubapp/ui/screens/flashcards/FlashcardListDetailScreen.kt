@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.sharp.ArrowBack
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -27,7 +26,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import com.example.studyhubapp.R
 import com.example.studyhubapp.ui.component.dialog.SimpleDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +56,8 @@ fun FlashCardListDetailScreen(
                 ),
                 navigationIcon = {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Sharp.ArrowBack,
+                        painter = painterResource(id = R.drawable.arrow_back),
+                        tint = MaterialTheme.colorScheme.scrim,
                         modifier = Modifier.clickable { navController.popBackStack() },
                         contentDescription = null
                     )
@@ -93,7 +95,7 @@ fun FlashCardListDetailScreen(
                 SimpleDialog(
                     dialogHeader = "Create New Flashcard",
                     labelText = "Card content",
-                    isSingleLine = true,
+                    isSingleLine = false,
                     confirmButtonText = "Create New Flashcard",
                     onDismiss = { isNewFlashcardButtonClicked = !isNewFlashcardButtonClicked },
                     onConfirm = { newFolderName ->

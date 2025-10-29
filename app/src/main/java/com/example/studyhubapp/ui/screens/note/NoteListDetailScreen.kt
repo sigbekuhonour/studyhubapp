@@ -50,24 +50,21 @@ fun NoteListDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back),
-                            modifier = Modifier.clickable {
-                                navController.popBackStack()
-                            },
-                            tint = MaterialTheme.colorScheme.scrim,
-                            contentDescription = null
-                        )
-                        Text(
-                            text = folderName,
-                            color = MaterialTheme.colorScheme.scrim,
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                    }
+                    Text(
+                        text = folderName,
+                        color = MaterialTheme.colorScheme.scrim,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                },
+                navigationIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_back),
+                        modifier = Modifier.clickable {
+                            navController.popBackStack()
+                        },
+                        tint = MaterialTheme.colorScheme.scrim,
+                        contentDescription = null
+                    )
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary
                 )
