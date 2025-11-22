@@ -1,11 +1,11 @@
-package com.example.studyhubapp.data.datasource
+package com.example.studyhubapp.data.datasource.remote
 
 import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
 import kotlinx.coroutines.flow.Flow
 
-interface DataSource {
+interface RemoteDataSource {
     fun getAllFolders(): Flow<List<Folder>>
     fun getAllNotes(): Flow<List<Note>>
     fun getAllFlashcards(): Flow<List<Flashcard>>

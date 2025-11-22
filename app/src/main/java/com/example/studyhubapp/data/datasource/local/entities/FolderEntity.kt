@@ -1,4 +1,4 @@
-package com.example.studyhubapp.data.datasource.remote.entities
+package com.example.studyhubapp.data.datasource.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

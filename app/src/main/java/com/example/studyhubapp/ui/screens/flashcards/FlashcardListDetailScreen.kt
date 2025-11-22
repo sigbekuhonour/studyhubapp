@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -68,7 +66,7 @@ fun FlashCardListDetailScreen(
         floatingActionButton = {
             IconButton(onClick = { isNewFlashcardButtonClicked = !isNewFlashcardButtonClicked }) {
                 Icon(
-                    imageVector = Icons.Default.AddCircle,
+                    painter = painterResource(id = R.drawable.add_circle),
                     tint = MaterialTheme.colorScheme.scrim,
                     contentDescription = null
                 )

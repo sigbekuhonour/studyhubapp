@@ -1,76 +1,62 @@
 package com.example.studyhubapp.data.datasource.local
 
-import com.example.studyhubapp.data.datasource.DataSource
+import com.example.studyhubapp.data.datasource.local.dao.FlashcardDao
+import com.example.studyhubapp.data.datasource.local.dao.FolderDao
+import com.example.studyhubapp.data.datasource.local.dao.NoteDao
+import com.example.studyhubapp.data.datasource.local.entities.FlashcardEntity
+import com.example.studyhubapp.data.datasource.local.entities.FolderEntity
+import com.example.studyhubapp.data.datasource.local.entities.NoteEntity
 import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.map
 
 
-class LocalStorageDataSourceImpl : DataSource {
-    private val _folders = MutableStateFlow<List<Folder>>(
-        listOf(
-            Folder(id = 0, title = "Quick Notes"),
-            Folder(id = 1, title = "Shared Notes"),
-            Folder(id = 2, title = "Deleted Notes")
-        )
-    )
-    private val _notes = MutableStateFlow<List<Note>>(
-        listOf(
-            Note(id = 0, folderId = 0, title = "First Note", content = "First content"),
-            Note(id = 1, folderId = 0, title = "Second Note", content = "Second content etc"),
-            Note(id = 2, folderId = 1, title = "Third Note", content = "Third content etc"),
-            Note(id = 3, folderId = 2, title = "Fourth Note", content = "Fourth content etc")
-        )
-    )
-
-    private val _flashcards = MutableStateFlow<List<Flashcard>>(
-        listOf(
-            Flashcard(id = 0, ownerNoteId = 0, content = "My first flashcard"),
-            Flashcard(id = 1, ownerNoteId = 0, content = "My second flashcard")
-        )
-    )
+class LocalStorageDataSourceImpl(
+    val folderDao: FolderDao,
+    val noteDao: NoteDao,
+    val flashcardDao: FlashcardDao
+) : LocalDataSource {
+    override fun getAllFolders(): Flow<List<Folder>> =
+        folderDao.getAllFolders().map {
+            it.map(FolderEntity::toDomain)
+        }
 
 
-    override fun getAllFolders(): Flow<List<Folder>> = _folders
-    override fun getAllNotes(): Flow<List<Note>> = _notes
-    override fun getAllFlashcards(): Flow<List<Flashcard>> = _flashcards
+    override fun getAllNotes(): Flow<List<Note>> =
+        noteDao.getAllNotes().map { it.map(NoteEntity::toDomain) }
+
+    override fun getAllFlashcards(): Flow<List<Flashcard>> =
+        flashcardDao.getAllFlashcards().map { it.map(FlashcardEntity::toDomain) }
+
 
     override suspend fun deleteFolderById(folderId: Int) {
-        if (folderId in setOf(0, 1, 2)) return
-        _folders.update { list -> list.filterNot { it.id == folderId } }
+        folderDao.deleteFolderById(folderId)
     }
 
     override suspend fun deleteFlashcardById(flashcardId: Int, noteId: Int) {
-        _flashcards.update { list -> list.filterNot { it.id == flashcardId && it.ownerNoteId == noteId } }
+        flashcardDao.deleteFlashcardById(flashcardId, noteId)
     }
 
     override suspend fun deleteNoteById(folderId: Int, noteId: Int) {
-        _notes.update { list -> list.filterNot { it.id == noteId } }
+        noteDao.deleteNoteById(folderId, noteId)
     }
 
     override suspend fun addFolder(folder: Folder) {
-        _folders.value = _folders.value + folder
+        folderDao.addFolder(folder.toEntity())
     }
 
     override suspend fun addFlashcard(flashcard: Flashcard) {
-        _flashcards.value = _flashcards.value + flashcard
+        flashcardDao.addFlashcard(flashcard.toEntity())
     }
 
     override suspend fun addNote(note: Note) {
-        _notes.value = _notes.value + note
+        noteDao.addNote(note.toEntity())
     }
 
     override suspend fun updateFlashcardContent(newContent: String, id: Int) {
-        _flashcards.value = _flashcards.value.map { eachFlashcard ->
-            if (eachFlashcard.id == id) {
-                eachFlashcard.copy(content = newContent)
-            } else {
-                eachFlashcard
-            }
-        }
+        flashcardDao.updateFlashcardContent(newContent, id)
     }
 
     override suspend fun saveNoteChanges(
@@ -79,23 +65,31 @@ class LocalStorageDataSourceImpl : DataSource {
         title: String?,
         content: String?
     ) {
-        _notes.value = _notes.value.map { eachNote ->
-            if (eachNote.folderId == folderId && eachNote.id == noteId) {
-                eachNote.copy(
-                    title = title ?: eachNote.title,
-                    content = content ?: eachNote.content
-                )
-            } else eachNote
-        }
+        noteDao.saveNoteChanges(folderId, noteId, title, content)
     }
 
     override suspend fun updateFolderName(folderId: Int, newFolderName: String) {
-        _folders.value = _folders.value.map { eachFolder ->
-            if (eachFolder.id == folderId) {
-                eachFolder.copy(title = newFolderName)
-            } else {
-                eachFolder
-            }
-        }
+        folderDao.updateFolderName(newFolderName, folderId)
     }
 }
+
+private fun FolderEntity.toDomain() = Folder(id = folderId, title = title)
+private fun NoteEntity.toDomain() =
+    Note(id = noteId, title = title, content = content, folderId = ownerFolderId)
+
+private fun FlashcardEntity.toDomain() = Flashcard(
+    id = flashcardId, ownerNoteId = ownerNoteId, content = content
+)
+
+private fun Folder.toEntity() = FolderEntity(folderId = 0, title = title)
+
+private fun Note.toEntity() = NoteEntity(
+    noteId = 0,
+    title = title,
+    content = content,
+    ownerFolderId = folderId
+)
+
+private fun Flashcard.toEntity() = FlashcardEntity(
+    flashcardId = 0, ownerNoteId = ownerNoteId, content = content
+)

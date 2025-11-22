@@ -67,11 +67,9 @@ fun SignUpScreen(
 
             is AuthState.Unauthenticated -> {}
             is AuthState.Error -> {
-                /* show error */
                 Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT)
                     .show()
             }
-            // ...
         }
     }
 
@@ -121,7 +119,7 @@ fun SignUpScreen(
                 Spacer(modifier = Modifier.padding(horizontal = 3.dp))
                 Text(
                     text = "Login here",
-                    modifier = Modifier.clickable { navController.navigate("login") },
+                    modifier = Modifier.clickable { navController.navigate("loginPage") },
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary
                 )

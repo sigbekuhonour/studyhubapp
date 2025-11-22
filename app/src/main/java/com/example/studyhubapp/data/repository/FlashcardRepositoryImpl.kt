@@ -1,19 +1,23 @@
 package com.example.studyhubapp.data.repository
 
-import com.example.studyhubapp.data.datasource.DataSource
+import com.example.studyhubapp.data.datasource.local.LocalDataSource
+import com.example.studyhubapp.data.datasource.remote.RemoteDataSource
 import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.repository.FlashcardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
-class FlashcardRepositoryImpl(private val dataSourceImpl: DataSource) : FlashcardRepository {
+class FlashcardRepositoryImpl(
+    private val localDataSourceImpl: LocalDataSource,
+    private val remoteDataSourceImpl: RemoteDataSource
+) : FlashcardRepository {
     override fun getAllFlashcards(): Flow<List<Flashcard>> =
-        dataSourceImpl.getAllFlashcards()
+        localDataSourceImpl.getAllFlashcards()
 
 
     override suspend fun addFlashcard(ownerNoteId: Int, content: String) {
-        val flashcardId = dataSourceImpl.getAllFlashcards().first().size
-        dataSourceImpl.addFlashcard(
+        val flashcardId = localDataSourceImpl.getAllFlashcards().first().size
+        localDataSourceImpl.addFlashcard(
             Flashcard(
                 id = flashcardId,
                 ownerNoteId = ownerNoteId,
@@ -23,10 +27,10 @@ class FlashcardRepositoryImpl(private val dataSourceImpl: DataSource) : Flashcar
     }
 
     override suspend fun deleteFlashcardByNoteId(flashcardId: Int, noteId: Int) {
-        dataSourceImpl.deleteFlashcardById(flashcardId, noteId)
+        localDataSourceImpl.deleteFlashcardById(flashcardId, noteId)
     }
 
     override suspend fun updateFlashcardContent(newContent: String, id: Int) {
-        dataSourceImpl.updateFlashcardContent(newContent, id)
+        localDataSourceImpl.updateFlashcardContent(newContent, id)
     }
 }

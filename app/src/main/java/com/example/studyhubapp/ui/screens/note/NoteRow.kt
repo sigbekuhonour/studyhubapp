@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -38,13 +36,13 @@ fun NoteRow(
     ElevatedCard(
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.inverseSurface),
-        onClick = { navController.navigate("Note/$folderName/$folderId/$title") }) {
+        onClick = { navController.navigate("notePage/$folderName/$folderId/$title") }) {
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Filled.Menu,
+                painterResource(id = R.drawable.menu),
                 modifier = Modifier.padding(horizontal = 5.dp),
                 tint = MaterialTheme.colorScheme.scrim,
                 contentDescription = ""

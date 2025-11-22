@@ -22,6 +22,7 @@ android {
 
     buildTypes {
         release {
+            isDebuggable = false
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -46,15 +47,17 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.media3.database)
     implementation(libs.androidx.compose.foundation.layout)
-    val room_version = "2.7.2"
-    val nav_version = "2.9.3"
-    ksp("androidx.room:room-compiler:2.7.2")
+    implementation(libs.firebase.crashlytics.buildtools)
+    val room_version = "2.8.4"
+    val nav_version = "2.9.6"
+    ksp("androidx.room:room-compiler:2.8.4")
+    implementation("com.google.firebase:firebase-firestore")
     implementation("androidx.room:room-runtime:${room_version}")
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.media3.common.ktx)
-    implementation("com.firebaseui:firebase-ui-auth:9.0.0")
+    implementation("com.firebaseui:firebase-ui-auth:9.1.1")
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation("com.google.android.gms:play-services-auth:21.4.0")
@@ -65,7 +68,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.9.0")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.9.5")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

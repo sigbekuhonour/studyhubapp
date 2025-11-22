@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.studyhubapp.R
-import com.example.studyhubapp.data.datasource.DataSource
+import com.example.studyhubapp.data.datasource.local.LocalDataSource
+import com.example.studyhubapp.data.datasource.remote.RemoteDataSource
 import com.example.studyhubapp.data.repository.NoteFolderRepositoryImpl
 import com.example.studyhubapp.domain.repository.NoteFolderRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -65,10 +66,16 @@ class NoteFolderViewModel(
 
 
     companion object {
-        fun Factory(dataSource: DataSource): ViewModelProvider.Factory = viewModelFactory {
+        fun Factory(
+            localDataSource: LocalDataSource,
+            remoteDataSource: RemoteDataSource
+        ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 NoteFolderViewModel(
-                    folderRepository = NoteFolderRepositoryImpl(dataSource)
+                    folderRepository = NoteFolderRepositoryImpl(
+                        localDataSourceImpl = localDataSource,
+                        remoteDataSourceImpl = remoteDataSource
+                    )
                 )
             }
         }

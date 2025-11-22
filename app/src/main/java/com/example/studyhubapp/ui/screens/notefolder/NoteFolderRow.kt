@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,7 +48,7 @@ fun FolderRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clickable(enabled = !isActionTextClicked) {
-                navController.navigate("NoteList/$folderName/$folderId")
+                navController.navigate("noteListPage/$folderName/$folderId")
             }
 
             .background(color = MaterialTheme.colorScheme.inverseSurface)
@@ -70,7 +68,7 @@ fun FolderRow(
 
             Box {
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
+                    painterResource(id = R.drawable.more_vert),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.clickable { expanded = !expanded },
                     contentDescription = "More options"
@@ -84,7 +82,7 @@ fun FolderRow(
                         text = { Text("Rename Folder") },
                         onClick = {
                             expanded = false
-                            navController.navigate("rename/$folderId/$folderName")
+                            navController.navigate("renameFolderPage/$folderId/$folderName")
                         }
                     )
                 }

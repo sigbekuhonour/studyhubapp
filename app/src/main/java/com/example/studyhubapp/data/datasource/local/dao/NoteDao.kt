@@ -1,9 +1,9 @@
-package com.example.studyhubapp.data.datasource.remote.dao
+package com.example.studyhubapp.data.datasource.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.studyhubapp.data.datasource.remote.entities.NoteEntity
+import com.example.studyhubapp.data.datasource.local.entities.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

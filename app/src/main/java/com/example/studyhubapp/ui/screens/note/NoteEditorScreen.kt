@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Check
-import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -52,6 +49,7 @@ fun NoteEditorScreen(
         title = note.title
         content = note.content
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -90,7 +88,7 @@ fun NoteEditorScreen(
                         )
                     }) {
                         Icon(
-                            imageVector = Icons.Sharp.Check,
+                            painter = painterResource(id = R.drawable.check),
                             tint = MaterialTheme.colorScheme.scrim,
                             contentDescription = null
                         )
@@ -118,10 +116,10 @@ fun NoteEditorScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.weight(1f))
-                Icon(imageVector = Icons.Sharp.Favorite, contentDescription = null)
+                Icon(painter = painterResource(id = R.drawable.favorite), contentDescription = null)
                 Text(
                     text = "Review Cards", modifier = Modifier
-                        .clickable { navController.navigate("flashcards/${note?.id}") }
+                        .clickable { navController.navigate("flashcardPage/${note?.id}") }
                         .background(
                             brush = Brush.linearGradient(
                                 listOf(

@@ -1,16 +1,16 @@
-package com.example.studyhubapp.data.datasource.remote.database
+package com.example.studyhubapp.data.datasource.local.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.studyhubapp.data.datasource.remote.dao.FlashcardDao
-import com.example.studyhubapp.data.datasource.remote.dao.FolderDao
-import com.example.studyhubapp.data.datasource.remote.dao.NoteDao
-import com.example.studyhubapp.data.datasource.remote.entities.FlashcardEntity
-import com.example.studyhubapp.data.datasource.remote.entities.FolderEntity
-import com.example.studyhubapp.data.datasource.remote.entities.NoteEntity
+import com.example.studyhubapp.data.datasource.local.dao.FlashcardDao
+import com.example.studyhubapp.data.datasource.local.dao.FolderDao
+import com.example.studyhubapp.data.datasource.local.dao.NoteDao
+import com.example.studyhubapp.data.datasource.local.entities.FlashcardEntity
+import com.example.studyhubapp.data.datasource.local.entities.FolderEntity
+import com.example.studyhubapp.data.datasource.local.entities.NoteEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
     entities = [FolderEntity::class, NoteEntity::class, FlashcardEntity::class],
     version = 1
 )
-abstract class StudyHubDatabase : RoomDatabase() {
+abstract class StudyHubLocalDatabase : RoomDatabase() {
     abstract fun folderDao(): FolderDao
     abstract fun noteDao(): NoteDao
     abstract fun flashcardDao(): FlashcardDao
@@ -29,13 +29,13 @@ abstract class StudyHubDatabase : RoomDatabase() {
         const val NAME = "StudyHub_DB"
 
         @Volatile
-        private var INSTANCE: StudyHubDatabase? = null
+        private var INSTANCE: StudyHubLocalDatabase? = null
 
-        fun getDatabase(context: Context): StudyHubDatabase {
+        fun getDatabase(context: Context): StudyHubLocalDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    StudyHubDatabase::class.java,
+                    StudyHubLocalDatabase::class.java,
                     NAME
                 )
                     .addCallback(object : Callback() {

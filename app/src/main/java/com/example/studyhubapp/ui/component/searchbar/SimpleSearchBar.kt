@@ -7,9 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,9 +22,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
+import com.example.studyhubapp.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +63,7 @@ fun SimpleSearchBar(
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.Search,
+                            painter = painterResource(id = R.drawable.search),
                             contentDescription = null
                         )
                     },
@@ -72,7 +71,7 @@ fun SimpleSearchBar(
                         if (expanded) {
                             IconButton(onClick = { expanded = !expanded }) {
                                 Icon(
-                                    imageVector = Icons.Default.Close,
+                                    painter = painterResource(id = R.drawable.close),
                                     contentDescription = "Clear search"
                                 )
                             }

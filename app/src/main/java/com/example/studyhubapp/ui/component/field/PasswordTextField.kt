@@ -2,8 +2,6 @@ package com.example.studyhubapp.ui.component.field
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +30,12 @@ fun PasswordTextField(
         value = title,
         shape = MaterialTheme.shapes.medium,
         onValueChange = onTitleChange,
-        leadingIcon = { Icon(imageVector = Icons.Filled.Lock, contentDescription = null) },
+        leadingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.lock),
+                contentDescription = null
+            )
+        },
         visualTransformation = if (isPasswordHidden) {
             PasswordVisualTransformation()
         } else {

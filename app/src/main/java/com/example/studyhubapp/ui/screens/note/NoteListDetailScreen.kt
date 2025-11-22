@@ -85,7 +85,7 @@ fun NoteListDetailScreen(
                     IconButton(
                         onClick = {
                             navController.navigate(
-                                "Note/$folderName/$folderId/New_Note${notes.filter { note -> note.folderId == folderId }.size}"
+                                "notePage/$folderName/$folderId/New_Note${notes.filter { note -> note.folderId == folderId }.size}"
                             )
                         },
                     ) {

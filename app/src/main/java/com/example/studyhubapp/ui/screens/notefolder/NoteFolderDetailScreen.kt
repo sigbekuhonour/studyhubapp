@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.util.UnstableApi
@@ -90,7 +89,7 @@ fun NoteFolderDetailScreen(
                     Box {
                         IconButton(onClick = { isSettingButtonClicked = !isSettingButtonClicked }) {
                             Icon(
-                                imageVector = Icons.Sharp.Settings,
+                                painter = painterResource(id = R.drawable.settings),
                                 contentDescription = null
                             )
                         }
@@ -126,7 +125,7 @@ fun NoteFolderDetailScreen(
                         icon = R.drawable.new_notes,
                         onClick = {
                             navController.navigate(
-                                "Note/${folders.first().title}/${folders.first().id}/New_Note"
+                                "notePage/${folders.first().title}/${folders.first().id}/New_Note"
                             )
                         })
                 }
