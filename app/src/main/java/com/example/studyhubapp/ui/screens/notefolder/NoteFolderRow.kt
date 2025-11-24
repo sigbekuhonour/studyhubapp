@@ -41,7 +41,7 @@ fun FolderRow(
     onDeleteClick: () -> Unit
 ) {
 
-    Log.d("FolderRow", "Folder $folderId noteCount: $noteFolderContentSize")
+    Log.d("FolderRow", "FolderDto $folderId noteCount: $noteFolderContentSize")
     var expanded by rememberSaveable { mutableStateOf(false) }
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -79,7 +79,7 @@ fun FolderRow(
                     onDismissRequest = { expanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Rename Folder") },
+                        text = { Text("Rename FolderDto") },
                         onClick = {
                             expanded = false
                             navController.navigate("renameFolderPage/$folderId/$folderName")

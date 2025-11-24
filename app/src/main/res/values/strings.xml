@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">StudyHubApp</string>
     <string name="default_web_client_id">951689877010-epbm78i0ei62ka07vmu138d1jc7u04ue.apps.googleusercontent.com</string>
+    <string name="project_url">https://rxyknyacnoayixkhdpnl.supabase.co</string>
+    <string name="anon_key">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4eWtueWFjbm9heWl4a2hkcG5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MTUwNjQsImV4cCI6MjA3OTM5MTA2NH0.98cnJFsrrBC7DuQFuI_WeZ-4r8nmHFw3gCana3uzanc</string>
 </resources>

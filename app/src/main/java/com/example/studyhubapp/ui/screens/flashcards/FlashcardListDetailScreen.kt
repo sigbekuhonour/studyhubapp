@@ -91,10 +91,10 @@ fun FlashCardListDetailScreen(
             }
             if (isNewFlashcardButtonClicked) {
                 SimpleDialog(
-                    dialogHeader = "Create New Flashcard",
+                    dialogHeader = "Create New FlashcardDto",
                     labelText = "Card content",
                     isSingleLine = false,
-                    confirmButtonText = "Create New Flashcard",
+                    confirmButtonText = "Create New FlashcardDto",
                     onDismiss = { isNewFlashcardButtonClicked = !isNewFlashcardButtonClicked },
                     onConfirm = { newFolderName ->
                         viewModel.addFlashcard(

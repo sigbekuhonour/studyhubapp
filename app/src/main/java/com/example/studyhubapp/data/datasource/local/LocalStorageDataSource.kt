@@ -6,6 +6,8 @@ import com.example.studyhubapp.data.datasource.local.dao.NoteDao
 import com.example.studyhubapp.data.datasource.local.entities.FlashcardEntity
 import com.example.studyhubapp.data.datasource.local.entities.FolderEntity
 import com.example.studyhubapp.data.datasource.local.entities.NoteEntity
+import com.example.studyhubapp.data.datasource.local.mapper.toDomainModel
+import com.example.studyhubapp.data.datasource.local.mapper.toEntity
 import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
@@ -20,15 +22,15 @@ class LocalStorageDataSourceImpl(
 ) : LocalDataSource {
     override fun getAllFolders(): Flow<List<Folder>> =
         folderDao.getAllFolders().map {
-            it.map(FolderEntity::toDomain)
+            it.map(FolderEntity::toDomainModel)
         }
 
 
     override fun getAllNotes(): Flow<List<Note>> =
-        noteDao.getAllNotes().map { it.map(NoteEntity::toDomain) }
+        noteDao.getAllNotes().map { it.map(NoteEntity::toDomainModel) }
 
     override fun getAllFlashcards(): Flow<List<Flashcard>> =
-        flashcardDao.getAllFlashcards().map { it.map(FlashcardEntity::toDomain) }
+        flashcardDao.getAllFlashcards().map { it.map(FlashcardEntity::toDomainModel) }
 
 
     override suspend fun deleteFolderById(folderId: Int) {
@@ -73,23 +75,6 @@ class LocalStorageDataSourceImpl(
     }
 }
 
-private fun FolderEntity.toDomain() = Folder(id = folderId, title = title)
-private fun NoteEntity.toDomain() =
-    Note(id = noteId, title = title, content = content, folderId = ownerFolderId)
 
-private fun FlashcardEntity.toDomain() = Flashcard(
-    id = flashcardId, ownerNoteId = ownerNoteId, content = content
-)
 
-private fun Folder.toEntity() = FolderEntity(folderId = 0, title = title)
 
-private fun Note.toEntity() = NoteEntity(
-    noteId = 0,
-    title = title,
-    content = content,
-    ownerFolderId = folderId
-)
-
-private fun Flashcard.toEntity() = FlashcardEntity(
-    flashcardId = 0, ownerNoteId = ownerNoteId, content = content
-)

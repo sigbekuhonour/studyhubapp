@@ -62,7 +62,6 @@ fun AppNav(modifier: Modifier) {
                     factory = NoteFolderViewModel.Factory(
                         localDataSource = localDataSource,
                         remoteDataSource = remoteDataSource
-
                     )
                 )
             NoteFolderDetailScreen(

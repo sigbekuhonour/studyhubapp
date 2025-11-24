@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.2.21"
 }
 
 android {
@@ -38,6 +39,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -51,6 +53,9 @@ dependencies {
     val room_version = "2.8.4"
     val nav_version = "2.9.6"
     ksp("androidx.room:room-compiler:2.8.4")
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.2.6"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.ktor:ktor-client-android:3.3.2")
     implementation("com.google.firebase:firebase-firestore")
     implementation("androidx.room:room-runtime:${room_version}")
     implementation(platform(libs.firebase.bom))

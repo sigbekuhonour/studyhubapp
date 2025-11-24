@@ -16,6 +16,7 @@ interface AuthRepository {
         password: String
     ): Flow<AuthResponse>
 
+    fun userId(): String?
     fun isUserSignedIn(): Boolean
     suspend fun signUpWithEmail(
         email: String,

@@ -3,12 +3,11 @@ package com.example.studyhubapp.data.datasource.remote
 import com.example.studyhubapp.domain.model.Flashcard
 import com.example.studyhubapp.domain.model.Folder
 import com.example.studyhubapp.domain.model.Note
-import kotlinx.coroutines.flow.Flow
 
 interface RemoteDataSource {
-    fun getAllFolders(): Flow<List<Folder>>
-    fun getAllNotes(): Flow<List<Note>>
-    fun getAllFlashcards(): Flow<List<Flashcard>>
+    suspend fun getAllFolders(): List<Folder>
+    suspend fun getAllNotes(): List<Note>
+    suspend fun getAllFlashcards(): List<Flashcard>
     suspend fun deleteFolderById(folderId: Int)
     suspend fun deleteFlashcardById(flashcardId: Int, noteId: Int)
     suspend fun deleteNoteById(folderId: Int, noteId: Int)

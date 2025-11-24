@@ -59,7 +59,7 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
                 Log.d("NoteViewModel", "Creating new note: $title in folder $folderId")
                 addNotesToFolderWithId(folderId, title)
             } else {
-                Log.d("NoteViewModel", "Note already exists: $noteId")
+                Log.d("NoteViewModel", "NoteDto already exists: $noteId")
             }
         }
     }
