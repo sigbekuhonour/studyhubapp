@@ -10,7 +10,13 @@ plugins {
 android {
     namespace = "com.example.studyhubapp"
     compileSdk = 36
+    ndkVersion = "29.0.14206865"
 
+    packaging {
+        resources {
+            excludes += "**/dump_syms/**"
+        }
+    }
     defaultConfig {
         applicationId = "com.example.studyhubapp"
         minSdk = 34
@@ -20,7 +26,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    kotlin {
+        jvmToolchain(17)
+    }
     buildTypes {
         release {
             isDebuggable = false
@@ -32,11 +40,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         buildConfig = true
@@ -50,30 +55,29 @@ dependencies {
     implementation(libs.androidx.media3.database)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.firebase.crashlytics.buildtools)
-    val room_version = "2.8.4"
-    val nav_version = "2.9.6"
-    ksp("androidx.room:room-compiler:2.8.4")
-    implementation(platform("io.github.jan-tennert.supabase:bom:3.2.6"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.ktor:ktor-client-android:3.3.2")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("androidx.room:room-runtime:${room_version}")
+
+    ksp(libs.androidx.room.compiler)
+    implementation(platform(libs.bom))
+    implementation(libs.postgrest.kt)
+    implementation(libs.ktor.client.android)
+    implementation(libs.firebase.firestore)
+    implementation(libs.androidx.room.runtime)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.media3.common.ktx)
-    implementation("com.firebaseui:firebase-ui-auth:9.1.1")
+    implementation(libs.firebase.ui.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
-    implementation("com.google.android.gms:play-services-auth:21.4.0")
-    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation(libs.play.services.auth)
+    implementation(libs.coil.compose)
     implementation(libs.androidx.credentials)
     implementation(libs.googleid)
     testImplementation(libs.junit)
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-    implementation("androidx.navigation:navigation-compose:$nav_version")
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.9.5")
+    testImplementation(libs.kotlinx.coroutines.test)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
