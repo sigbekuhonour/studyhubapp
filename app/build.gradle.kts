@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.studyhubapp"
+    namespace = "com.honoursigbeku.studyhubapp"
     compileSdk = 36
     ndkVersion = "29.0.14206865"
 
@@ -17,11 +17,12 @@ android {
             excludes += "**/dump_syms/**"
         }
     }
+
     defaultConfig {
-        applicationId = "com.example.studyhubapp"
+        applicationId = "com.honoursigbeku.studyhubapp"
         minSdk = 34
         targetSdk = 36
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -32,11 +33,12 @@ android {
     buildTypes {
         release {
             isDebuggable = false
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk.debugSymbolLevel = "FULL"
         }
     }
     compileOptions {
