@@ -140,10 +140,10 @@ fun NoteFolderDetailScreen(
             )
             if (newFolderButtonIsClicked) {
                 SimpleDialog(
-                    dialogHeader = "Create New FolderDto",
-                    labelText = "FolderDto Name",
+                    dialogHeader = "Create New Folder",
+                    labelText = "Folder Name",
                     isSingleLine = true,
-                    confirmButtonText = "Create New FolderDto",
+                    confirmButtonText = "Create New Folder",
                     onDismiss = { newFolderButtonIsClicked = !newFolderButtonIsClicked },
                     onConfirm = { newFolderName ->
                         noteFolderViewModel.addFolder(newFolderName)

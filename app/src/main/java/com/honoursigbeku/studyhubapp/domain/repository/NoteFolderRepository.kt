@@ -5,10 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteFolderRepository {
 
-    fun getAllFolders(): Flow<List<Folder>>
-    fun getFolderContentSize(folderId: Int): Flow<Int>
-    suspend fun addFolder(name: String)
-    suspend fun deleteFolder(folderId: Int)
-    suspend fun updateFolderName(folderId: Int, newFolderName: String)
+    fun getAllFolders(userId: String): Flow<List<Folder>>
+    fun getFolderContentSize(folderId: String): Flow<Int>
+    suspend fun addFolder(name: String, userId: String)
+    suspend fun deleteFolder(folderId: String, userId: String)
+    suspend fun updateFolderName(folderId: String, userId: String, newFolderName: String)
+    suspend fun syncFoldersFromRemote(userId: String)
 }
 

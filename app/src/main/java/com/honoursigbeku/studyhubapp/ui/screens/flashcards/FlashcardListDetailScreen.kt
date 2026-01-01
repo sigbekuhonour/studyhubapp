@@ -32,7 +32,7 @@ import com.honoursigbeku.studyhubapp.ui.component.dialog.SimpleDialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlashCardListDetailScreen(
-    noteId: Int, viewModel: FlashcardViewModel, navController: NavController
+    noteId: String, viewModel: FlashcardViewModel, navController: NavController
 ) {
     val listOfFlashcards =
         viewModel.flashcards.collectAsState().value.filter { it.noteId == noteId }

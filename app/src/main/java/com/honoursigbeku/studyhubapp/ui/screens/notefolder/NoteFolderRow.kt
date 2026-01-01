@@ -33,7 +33,7 @@ import com.honoursigbeku.studyhubapp.R
 @Composable
 fun FolderRow(
     icon: Int,
-    folderId: Int,
+    folderId: String,
     folderName: String,
     noteFolderContentSize: Int,
     isActionTextClicked: Boolean,
@@ -41,7 +41,7 @@ fun FolderRow(
     onDeleteClick: () -> Unit
 ) {
 
-    Log.d("FolderRow", "FolderDto $folderId noteCount: $noteFolderContentSize")
+    Log.d("FolderRow", "Folder $folderId noteCount: $noteFolderContentSize")
     var expanded by rememberSaveable { mutableStateOf(false) }
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -79,7 +79,7 @@ fun FolderRow(
                     onDismissRequest = { expanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Rename FolderDto") },
+                        text = { Text("Rename Folder") },
                         onClick = {
                             expanded = false
                             navController.navigate("renameFolderPage/$folderId/$folderName")

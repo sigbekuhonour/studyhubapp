@@ -19,8 +19,8 @@ import androidx.room.PrimaryKey
     indices = [Index("ownerFolderId")]
 )
 data class NoteEntity(
-    @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
+    @PrimaryKey val noteId: String = java.util.UUID.randomUUID().toString(),
     val title: String,
     val content: String,
-    val ownerFolderId: Int
+    val ownerFolderId: String
 )

@@ -36,19 +36,19 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     val notes: StateFlow<List<Note>> = _notes
 
     fun getNoteByTitle(
-        folderId: Int, title: String
+        folderId: String, title: String
     ): StateFlow<Note?> =
         notes.map { list -> list.firstOrNull { it.folderId == folderId && it.title == title } }
             .distinctUntilChanged()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    suspend fun getNoteId(folderId: Int, title: String): Int? {
+    suspend fun getNoteId(folderId: String, title: String): String? {
         return withContext(Dispatchers.IO) {
             noteRepository.getNoteId(folderId, title)
         }
     }
 
-    fun initializeNote(folderId: Int, title: String) {
+    fun initializeNote(folderId: String, title: String) {
         viewModelScope.launch {
             val noteId = getNoteId(folderId, title)
             if (noteId == null) {
@@ -61,21 +61,21 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     }
 
     fun saveNoteChanges(
-        folderId: Int, noteId: Int, title: String? = null, content: String? = null
+        folderId: String, noteId: String, title: String? = null, content: String? = null
     ) {
         viewModelScope.launch {
             noteRepository.saveNoteChanges(folderId, noteId, title, content)
         }
     }
 
-    fun addNotesToFolderWithId(folderId: Int, title: String) {
+    fun addNotesToFolderWithId(folderId: String, title: String) {
         viewModelScope.launch {
             Log.i("NOTE_ADDED", "ADDED NOTES TO FOLDER ID $folderId")
             noteRepository.addNoteByFolderId(folderId = folderId, title = title)
         }
     }
 
-    fun deleteNotesInFolderWithId(folderId: Int, noteId: Int) {
+    fun deleteNotesInFolderWithId(folderId: String, noteId: String) {
         viewModelScope.launch {
             noteRepository.deleteNoteByFolderId(folderId = folderId, noteId = noteId)
         }

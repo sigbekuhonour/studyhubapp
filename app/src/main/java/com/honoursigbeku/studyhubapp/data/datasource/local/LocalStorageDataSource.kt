@@ -7,7 +7,6 @@ import com.honoursigbeku.studyhubapp.data.datasource.local.entities.FlashcardEnt
 import com.honoursigbeku.studyhubapp.data.datasource.local.entities.FolderEntity
 import com.honoursigbeku.studyhubapp.data.datasource.local.entities.NoteEntity
 import com.honoursigbeku.studyhubapp.data.datasource.local.mapper.toDomainModel
-import com.honoursigbeku.studyhubapp.data.datasource.local.mapper.toEntity
 import com.honoursigbeku.studyhubapp.domain.model.Flashcard
 import com.honoursigbeku.studyhubapp.domain.model.Folder
 import com.honoursigbeku.studyhubapp.domain.model.Note
@@ -20,8 +19,8 @@ class LocalStorageDataSourceImpl(
     val noteDao: NoteDao,
     val flashcardDao: FlashcardDao
 ) : LocalDataSource {
-    override fun getAllFolders(): Flow<List<Folder>> =
-        folderDao.getAllFolders().map {
+    override fun getAllFolders(userId: String): Flow<List<Folder>> =
+        folderDao.getAllFolders(userId).map {
             it.map(FolderEntity::toDomainModel)
         }
 
@@ -33,45 +32,49 @@ class LocalStorageDataSourceImpl(
         flashcardDao.getAllFlashcards().map { it.map(FlashcardEntity::toDomainModel) }
 
 
-    override suspend fun deleteFolderById(folderId: Int) {
-        folderDao.deleteFolderById(folderId)
+    override suspend fun deleteFolderById(folderId: String, userId: String) {
+        folderDao.deleteFolderById(folderId, userId)
     }
 
-    override suspend fun deleteFlashcardById(flashcardId: Int, noteId: Int) {
+    override suspend fun deleteFlashcardById(flashcardId: String, noteId: String) {
         flashcardDao.deleteFlashcardById(flashcardId, noteId)
     }
 
-    override suspend fun deleteNoteById(folderId: Int, noteId: Int) {
+    override suspend fun deleteNoteById(folderId: String, noteId: String) {
         noteDao.deleteNoteById(folderId, noteId)
     }
 
-    override suspend fun addFolder(folder: Folder) {
-        folderDao.addFolder(folder.toEntity())
+    override suspend fun addFolder(folder: FolderEntity) {
+        folderDao.addFolder(folder)
     }
 
-    override suspend fun addFlashcard(flashcard: Flashcard) {
-        flashcardDao.addFlashcard(flashcard.toEntity())
+    override suspend fun addFlashcard(flashcard: FlashcardEntity) {
+        flashcardDao.addFlashcard(flashcard)
     }
 
-    override suspend fun addNote(note: Note) {
-        noteDao.addNote(note.toEntity())
+    override suspend fun addNote(note: NoteEntity) {
+        noteDao.addNote(note)
     }
 
-    override suspend fun updateFlashcardContent(newContent: String, id: Int) {
+    override suspend fun updateFlashcardContent(newContent: String, id: String) {
         flashcardDao.updateFlashcardContent(newContent, id)
     }
 
     override suspend fun saveNoteChanges(
-        folderId: Int,
-        noteId: Int,
+        folderId: String,
+        noteId: String,
         title: String?,
         content: String?
     ) {
         noteDao.saveNoteChanges(folderId, noteId, title, content)
     }
 
-    override suspend fun updateFolderName(folderId: Int, newFolderName: String) {
-        folderDao.updateFolderName(newFolderName, folderId)
+    override suspend fun updateFolderName(folderId: String, userId: String, newFolderName: String) {
+        folderDao.updateFolderName(
+            newFolderName = newFolderName,
+            folderId = folderId,
+            userId = userId
+        )
     }
 }
 

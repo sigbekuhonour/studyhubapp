@@ -37,7 +37,7 @@ import com.honoursigbeku.studyhubapp.ui.component.field.TitleTextField
 @Composable
 fun NoteEditorScreen(
     folderName: String,
-    folderId: Int,
+    folderId: String,
     title: String,
     viewModel: NoteViewModel,
     navController: NavController

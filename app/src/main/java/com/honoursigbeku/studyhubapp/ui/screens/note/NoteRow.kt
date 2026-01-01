@@ -28,7 +28,7 @@ fun NoteRow(
     title: String,
     folderName: String,
     content: String?,
-    folderId: Int,
+    folderId: String,
     viewModel: NoteViewModel,
     navController: NavController
 ) {

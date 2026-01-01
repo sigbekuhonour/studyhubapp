@@ -1,6 +1,7 @@
 package com.honoursigbeku.studyhubapp.data.repository
 
 import android.content.Context
+import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -10,18 +11,40 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingExcept
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
+import com.honoursigbeku.studyhubapp.domain.model.User
 import com.honoursigbeku.studyhubapp.domain.repository.AuthRepository
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthResponse
+import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import java.security.MessageDigest
 import java.util.UUID
 
 
-class AuthRepositoryImpl : AuthRepository {
+class AuthRepositoryImpl(
+    private val remoteDataSource: RemoteDataSource
+) : AuthRepository {
     private val auth = Firebase.auth
 
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
+    override fun authState(): StateFlow<AuthState> = _authState.asStateFlow()
+
+
+    override suspend fun saveUser() {
+        auth.currentUser?.let {
+            remoteDataSource.addNewUser(
+                User(
+                    firebaseUserId = it.uid,
+                    email = it.email
+                )
+            )
+        }
+    }
 
     override suspend fun signInWithGoogle(
         context: Context,
@@ -32,6 +55,7 @@ class AuthRepositoryImpl : AuthRepository {
             .build()
         val request = GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
         try {
+            _authState.value = AuthState.Loading
             val credentialManager = CredentialManager.create(context)
             val result = credentialManager.getCredential(context = context, request = request)
             val credential = result.credential
@@ -46,8 +70,20 @@ class AuthRepositoryImpl : AuthRepository {
 
                         auth.signInWithCredential(firebaseCredential).addOnCompleteListener {
                             if (it.isSuccessful) {
+                                auth.currentUser?.let { user ->
+                                    _authState.value = AuthState.Authenticated(user.uid)
+                                    Log.d(
+                                        "AuthRepoImpl",
+                                        "Successfully change user auth state to 'Authenticated' "
+                                    )
+                                }
                                 trySend(AuthResponse.Success)
+
                             } else {
+                                _authState.value = AuthState.Error(
+                                    message = it.exception?.message
+                                        ?: "An error occurred while attempting to create a new account using this Google account."
+                                )
                                 trySend(
                                     AuthResponse.Error(
                                         message = it.exception?.message
@@ -57,13 +93,29 @@ class AuthRepositoryImpl : AuthRepository {
                             }
                         }
                     } catch (e: GoogleIdTokenParsingException) {
-                        trySend(AuthResponse.Error(message = e.message ?: "Unknown error"))
+                        _authState.value = AuthState.Error(
+                            message = e.message ?: "GoogleIdTokenParsingException error occurred"
+                        )
+                        trySend(
+                            AuthResponse.Error(
+                                message = e.message
+                                    ?: "GoogleIdTokenParsingException error occurred"
+                            )
+                        )
                     }
 
                 }
             }
         } catch (e: Exception) {
-            trySend(AuthResponse.Error(message = e.message ?: ""))
+            _authState.value = AuthState.Error(
+                message = e.message ?: "Error occurred during sign in with google. Please try again"
+            )
+            trySend(
+                AuthResponse.Error(
+                    message = e.message
+                        ?: "An error occurred while trying to sign in with google. Please try again in a bit."
+                )
+            )
         }
         awaitClose()
     }
@@ -71,10 +123,19 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun signUpWithEmail(
         email: String, password: String
     ): Flow<AuthResponse> = callbackFlow {
+        _authState.value = AuthState.Loading
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                auth.currentUser?.let {
+                    _authState.value = AuthState.Authenticated(it.uid)
+                    Log.d("AuthRepoImpl", "Successfully change user auth state to 'Authenticated' ")
+                }
                 trySend(AuthResponse.Success)
             } else {
+                _authState.value = AuthState.Error(
+                    message = task.exception?.message
+                        ?: "Error occurred during sign up with email. Please try again"
+                )
                 trySend(AuthResponse.Error(message = task.exception?.message ?: "Unknown error"))
             }
         }
@@ -84,10 +145,19 @@ class AuthRepositoryImpl : AuthRepository {
     override suspend fun signInWithEmail(
         email: String, password: String
     ): Flow<AuthResponse> = callbackFlow {
+        _authState.value = AuthState.Loading
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                auth.currentUser?.let {
+                    _authState.value = AuthState.Authenticated(it.uid)
+                    Log.d("AuthRepoImpl", "Successfully change user auth state to 'Authenticated' ")
+                }
                 trySend(AuthResponse.Success)
             } else {
+                _authState.value = AuthState.Error(
+                    message = task.exception?.message
+                        ?: "Error occurred during sign in with email. Please try again"
+                )
                 trySend(
                     AuthResponse.Error(
                         message = task.exception?.message ?: "Unknown error"
@@ -98,8 +168,8 @@ class AuthRepositoryImpl : AuthRepository {
         awaitClose()
     }
 
-    override fun userId(): String? {
-        return auth.uid
+    override fun getCurrentUserId(): String? {
+        return (_authState.value as? AuthState.Authenticated)?.userId
     }
 
     override fun isUserSignedIn(): Boolean {
@@ -111,6 +181,9 @@ class AuthRepositoryImpl : AuthRepository {
             auth.signOut()
             AuthResponse.Success
         } catch (e: Exception) {
+            _authState.value = AuthState.Error(
+                message = e.message ?: "Error occurred during sign out. Please try again"
+            )
             AuthResponse.Error("Sign out failed: ${e.message}")
         }
     }

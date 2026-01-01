@@ -34,7 +34,7 @@ import com.honoursigbeku.studyhubapp.ui.component.searchbar.SimpleSearchBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListDetailScreen(
-    folderName: String, folderId: Int?, viewModel: NoteViewModel, navController: NavController
+    folderName: String, folderId: String?, viewModel: NoteViewModel, navController: NavController
 ) {
 
     val textFieldState = rememberTextFieldState()

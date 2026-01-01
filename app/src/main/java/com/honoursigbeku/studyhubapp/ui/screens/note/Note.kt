@@ -1,8 +1,8 @@
 package com.honoursigbeku.studyhubapp.ui.screens.note
 
 data class Note(
-    val id: Int,
-    val folderId: Int,
+    val id: String,
+    val folderId: String,
     val title: String,
     val content: String? = null
 )

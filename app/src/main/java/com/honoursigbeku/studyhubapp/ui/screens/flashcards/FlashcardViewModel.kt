@@ -31,23 +31,13 @@ class FlashcardViewModel(
         }
     }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
 
-    fun getFlashcardId(noteId: Int, content: String): Int? {
-        return flashcards.value.firstOrNull { eachFlashcard -> eachFlashcard.noteId == noteId && eachFlashcard.content == content }?.id
-    }
-
-    fun addFlashcard(content: String, noteId: Int) {
+    fun addFlashcard(content: String, noteId: String) {
         viewModelScope.launch {
             flashcardRepository.addFlashcard(ownerNoteId = noteId, content = content)
         }
     }
 
-    fun updateFlashcardContent(newContent: String, id: Int) {
-        viewModelScope.launch {
-            flashcardRepository.updateFlashcardContent(newContent = newContent, id = id)
-        }
-    }
-
-    fun deleteFlashcard(flashcardId: Int, noteId: Int) {
+    fun deleteFlashcard(flashcardId: String, noteId: String) {
         viewModelScope.launch {
             flashcardRepository.deleteFlashcardByNoteId(flashcardId = flashcardId, noteId = noteId)
         }

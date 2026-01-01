@@ -2,10 +2,13 @@ package com.honoursigbeku.studyhubapp.domain.repository
 
 import android.content.Context
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthResponse
+import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface AuthRepository {
-
+    fun authState(): StateFlow<AuthState>
+    suspend fun saveUser()
     suspend fun signInWithGoogle(
         context: Context,
         serverClientId: String,
@@ -16,7 +19,7 @@ interface AuthRepository {
         password: String
     ): Flow<AuthResponse>
 
-    fun userId(): String?
+    fun getCurrentUserId(): String?
     fun isUserSignedIn(): Boolean
     suspend fun signUpWithEmail(
         email: String,

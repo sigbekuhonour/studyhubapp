@@ -26,6 +26,16 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "SUPABASE_URL",
+            "\"https://rxyknyacnoayixkhdpnl.supabase.co\""
+        )
+        buildConfigField(
+            "String",
+            "SUPABASE_KEY",
+            "\"sb_publishable_bgETqLXfxtGLr2r72GYAlA_RAN1Dvzy\""
+        )
     }
     kotlin {
         jvmToolchain(17)
@@ -39,6 +49,16 @@ android {
                 "proguard-rules.pro"
             )
             ndk.debugSymbolLevel = "FULL"
+            buildConfigField(
+                "String",
+                "SUPABASE_URL",
+                "\"https://rxyknyacnoayixkhdpnl.supabase.co\""
+            )
+            buildConfigField(
+                "String",
+                "SUPABASE_KEY",
+                "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4eWtueWFjbm9heWl4a2hkcG5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MTUwNjQsImV4cCI6MjA3OTM5MTA2NH0.98cnJFsrrBC7DuQFuI_WeZ-4r8nmHFw3gCana3uzanc\""
+            )
         }
     }
     compileOptions {
@@ -57,7 +77,8 @@ dependencies {
     implementation(libs.androidx.media3.database)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.firebase.crashlytics.buildtools)
-
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.compose.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(platform(libs.bom))
     implementation(libs.postgrest.kt)

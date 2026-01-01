@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.honoursigbeku.studyhubapp.data.datasource.local.LocalStorageDataSourceProvider
 import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteStorageDataSourceProvider
+import com.honoursigbeku.studyhubapp.feature.usecase.AccountSetupUseCaseImpl
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
@@ -36,7 +37,15 @@ fun AppNav(modifier: Modifier) {
     val context = LocalContext.current
     val localDataSource = LocalStorageDataSourceProvider.getInstance(context)
     val remoteDataSource = RemoteStorageDataSourceProvider.getInstance
-    val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.Factory)
+    val authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModel.Factory(
+            remoteDataSource = remoteDataSource,
+            accountSetupUseCase = AccountSetupUseCaseImpl(
+                localDataSource = localDataSource,
+                remoteDataSource = remoteDataSource
+            )
+        )
+    )
 
     NavHost(
         navController = navController,
@@ -59,7 +68,8 @@ fun AppNav(modifier: Modifier) {
         composable(route = "landingPage") {
             val noteFolderViewModel: NoteFolderViewModel = viewModel(
                 factory = NoteFolderViewModel.Factory(
-                    localDataSource = localDataSource, remoteDataSource = remoteDataSource
+                    localDataSource = localDataSource,
+                    remoteDataSource = remoteDataSource,
                 )
             )
             NoteFolderDetailScreen(
@@ -84,7 +94,7 @@ fun AppNav(modifier: Modifier) {
                 )
             )
             val folderName = navBackStackEntry.arguments?.getString("folderName")
-            val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
+            val folderId = navBackStackEntry.arguments?.getString("folderId")
             if (folderName != null) {
                 NoteListDetailScreen(
                     folderName = folderName,
@@ -99,12 +109,11 @@ fun AppNav(modifier: Modifier) {
             enterTransition = { scaleIn() }) { navBackStackEntry ->
             val noteFolderViewModel: NoteFolderViewModel = viewModel(
                 factory = NoteFolderViewModel.Factory(
-                    localDataSource = localDataSource, remoteDataSource = remoteDataSource
-
+                    localDataSource = localDataSource, remoteDataSource = remoteDataSource,
                 )
             )
             val folderName = navBackStackEntry.arguments?.getString("folderName")
-            val folderId = navBackStackEntry.arguments?.getString("folderId")?.toInt()
+            val folderId = navBackStackEntry.arguments?.getString("folderId")
             if (folderName != null && folderId != null) {
                 RenameFolderScreen(
                     folderId = folderId,
@@ -124,7 +133,7 @@ fun AppNav(modifier: Modifier) {
             )
             val folderName = requireNotNull(navBackStackEntry.arguments?.getString("folderName"))
             val folderId =
-                requireNotNull(navBackStackEntry.arguments?.getString("folderId")?.toInt())
+                requireNotNull(navBackStackEntry.arguments?.getString("folderId"))
             val title = requireNotNull(navBackStackEntry.arguments?.getString("title"))
             LaunchedEffect(Unit) {
                 viewModel.initializeNote(folderId, title)
@@ -144,7 +153,7 @@ fun AppNav(modifier: Modifier) {
 
                 )
             )
-            val noteId = requireNotNull(navBackStackEntry.arguments?.getString("noteId")).toInt()
+            val noteId = requireNotNull(navBackStackEntry.arguments?.getString("noteId"))
             FlashCardListDetailScreen(
                 noteId = noteId, viewModel = viewModel, navController = navController
             )

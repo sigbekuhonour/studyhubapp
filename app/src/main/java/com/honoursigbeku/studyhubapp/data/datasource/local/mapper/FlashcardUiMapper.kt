@@ -6,7 +6,3 @@ import com.honoursigbeku.studyhubapp.domain.model.Flashcard
 fun FlashcardEntity.toDomainModel() = Flashcard(
     id = flashcardId, ownerNoteId = ownerNoteId, content = content
 )
-
-fun Flashcard.toEntity() = FlashcardEntity(
-    flashcardId = 0, ownerNoteId = ownerNoteId, content = content
-)

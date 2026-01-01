@@ -16,16 +16,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.honoursigbeku.studyhubapp.R
 import com.honoursigbeku.studyhubapp.ui.component.button.CreateAccountButton
@@ -35,25 +35,28 @@ import com.honoursigbeku.studyhubapp.ui.component.field.PasswordTextField
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthViewModel
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
-    modifier: Modifier = Modifier, viewModel: AuthViewModel, navController: NavController
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel,
+    navController: NavController
 ) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
-    val authState by viewModel.authState.collectAsState()
+    val authState by viewModel.authState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val context = LocalContext.current
-    val serverClientId = remember {
-        context.getString(R.string.default_web_client_id)
-    }
+    val serverClientId = stringResource(R.string.default_web_client_id)
+
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
                 Toast.makeText(
                     context, "Authentication successful", Toast.LENGTH_SHORT
                 ).show()
+
                 navController.navigate("LandingPage")
             }
 

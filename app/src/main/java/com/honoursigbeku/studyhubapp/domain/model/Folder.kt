@@ -1,3 +1,3 @@
 package com.honoursigbeku.studyhubapp.domain.model
 
-data class Folder(val id: Int, val title: String)
+data class Folder(val id: String, val title: String, val userId: String)

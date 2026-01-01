@@ -8,28 +8,55 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.honoursigbeku.studyhubapp.R
 import com.honoursigbeku.studyhubapp.data.datasource.local.LocalDataSource
 import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
+import com.honoursigbeku.studyhubapp.data.repository.AuthRepositoryImpl
 import com.honoursigbeku.studyhubapp.data.repository.NoteFolderRepositoryImpl
+import com.honoursigbeku.studyhubapp.domain.repository.AuthRepository
 import com.honoursigbeku.studyhubapp.domain.repository.NoteFolderRepository
+import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class NoteFolderViewModel(
-    private val folderRepository: NoteFolderRepository
+    private val authRepository: AuthRepository,
+    private val folderRepository: NoteFolderRepository,
 ) : ViewModel() {
 
-    private var _folders = folderRepository.getAllFolders().distinctUntilChanged()
 
-    val folders: StateFlow<List<Folder>> = _folders.map { folderList ->
-        folderList.map { eachFolder ->
-            Folder(id = eachFolder.id, icon = getIcon(eachFolder), title = eachFolder.title)
+    private val userId = authRepository.getCurrentUserId()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val folders: StateFlow<List<Folder>> = authRepository.authState()
+        .flatMapLatest { state ->
+            if (state is AuthState.Authenticated) {
+                folderRepository.getAllFolders(state.userId)
+            } else {
+                flowOf(emptyList())
+            }
         }
-    }.stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, emptyList())
+        .distinctUntilChanged()
+        .map { folderList ->
+            folderList.map { eachFolder ->
+                Folder(
+                    id = eachFolder.id,
+                    icon = getIcon(eachFolder),
+                    title = eachFolder.title
+                )
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
-    fun getFolderContentSize(folderId: Int): StateFlow<Int> {
+    fun getFolderContentSize(folderId: String): StateFlow<Int> {
         return folderRepository.getFolderContentSize(folderId)
             .stateIn(scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = 0)
     }
@@ -44,23 +71,31 @@ class NoteFolderViewModel(
         return icon
     }
 
-    //add folder
     fun addFolder(name: String) {
         viewModelScope.launch {
-            folderRepository.addFolder(name)
+            userId?.let {
+                folderRepository.addFolder(name, it)
+            }
         }
     }
 
-    fun updateFolderName(folderId: Int, currentFolderName: String) {
+    fun updateFolderName(folderId: String, currentFolderName: String) {
         viewModelScope.launch {
-            folderRepository.updateFolderName(folderId, currentFolderName)
+            userId?.let {
+                folderRepository.updateFolderName(
+                    folderId = folderId,
+                    newFolderName = currentFolderName,
+                    userId = it
+                )
+            }
         }
     }
 
-    //delete folder
-    fun deleteFolder(folderId: Int) {
+    fun deleteFolder(folderId: String) {
         viewModelScope.launch {
-            folderRepository.deleteFolder(folderId)
+            userId?.let {
+                folderRepository.deleteFolder(folderId = folderId, userId = it)
+            }
         }
     }
 
@@ -68,14 +103,16 @@ class NoteFolderViewModel(
     companion object {
         fun Factory(
             localDataSource: LocalDataSource,
-            remoteDataSource: RemoteDataSource
+            remoteDataSource: RemoteDataSource,
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
+                val folderRepo = NoteFolderRepositoryImpl(
+                    localDataSourceImpl = localDataSource,
+                    remoteDataSourceImpl = remoteDataSource
+                )
                 NoteFolderViewModel(
-                    folderRepository = NoteFolderRepositoryImpl(
-                        localDataSourceImpl = localDataSource,
-                        remoteDataSourceImpl = remoteDataSource
-                    )
+                    authRepository = AuthRepositoryImpl(remoteDataSource),
+                    folderRepository = folderRepo
                 )
             }
         }

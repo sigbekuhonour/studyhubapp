@@ -4,7 +4,7 @@ import com.honoursigbeku.studyhubapp.R
 
 
 data class Folder(
-    val id: Int,
+    val id: String,
     val icon: Int = R.drawable.folder_icon,
     val title: String
 )

@@ -2,7 +2,7 @@ package com.honoursigbeku.studyhubapp.ui.screens.authentication
 
 
 sealed class AuthState {
-    object Authenticated : AuthState()
+    data class Authenticated(val userId: String) : AuthState()
 
     object Loading : AuthState()
     object Unauthenticated : AuthState()

@@ -7,8 +7,7 @@ import com.honoursigbeku.studyhubapp.domain.model.Folder
 fun Folder.toDto(): FolderDto {
     return FolderDto(
         id = this.id,
-        ///fix this
-        userId = "TBD",
+        userId = this.userId,
         title = this.title,
     )
 }
@@ -17,5 +16,6 @@ fun FolderDto.toDomain(): Folder {
     return Folder(
         id = this.id,
         title = this.title,
+        userId = this.userId,
     )
 }

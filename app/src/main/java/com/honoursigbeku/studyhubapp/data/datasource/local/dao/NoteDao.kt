@@ -2,6 +2,7 @@ package com.honoursigbeku.studyhubapp.data.datasource.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.honoursigbeku.studyhubapp.data.datasource.local.entities.NoteEntity
 import kotlinx.coroutines.flow.Flow
@@ -11,11 +12,11 @@ interface NoteDao {
     @Query("SELECT * FROM notes")
     fun getAllNotes(): Flow<List<NoteEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNote(notes: NoteEntity)
 
     @Query("DELETE FROM notes WHERE noteId = :noteId AND ownerFolderId = :folderId")
-    suspend fun deleteNoteById(folderId: Int, noteId: Int)
+    suspend fun deleteNoteById(folderId: String, noteId: String)
 
     @Query(
         """
@@ -28,8 +29,8 @@ interface NoteDao {
     """
     )
     suspend fun saveNoteChanges(
-        folderId: Int,
-        noteId: Int,
+        folderId: String,
+        noteId: String,
         title: String?,
         content: String?
     )

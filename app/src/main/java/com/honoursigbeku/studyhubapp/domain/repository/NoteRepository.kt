@@ -5,13 +5,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
     fun getAllNotes(): Flow<List<Note>>
-    suspend fun getNoteId(folderId: Int, title: String): Int?
-    suspend fun addNoteByFolderId(folderId: Int, title: String)
-    suspend fun deleteNoteByFolderId(folderId: Int, noteId: Int)
+    suspend fun getNoteId(folderId: String, title: String): String?
+    suspend fun addNoteByFolderId(folderId: String, title: String)
+    suspend fun deleteNoteByFolderId(folderId: String, noteId: String)
     suspend fun saveNoteChanges(
-        folderId: Int,
-        noteId: Int,
+        folderId: String,
+        noteId: String,
         title: String? = null,
         content: String? = null
     )
+
+    suspend fun syncNotesFromRemote()
 }

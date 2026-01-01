@@ -7,20 +7,36 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
 import com.honoursigbeku.studyhubapp.data.repository.AuthRepositoryImpl
 import com.honoursigbeku.studyhubapp.domain.repository.AuthRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.honoursigbeku.studyhubapp.feature.usecase.AccountSetupUseCase
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
+class AuthViewModel(
+    private val authRepository: AuthRepository,
+    private val accountSetupUseCase: AccountSetupUseCase
+) : ViewModel() {
 
-    val authState: StateFlow<AuthState> = _authState.asStateFlow()
+    init {
+        observeAuthStateAndSetup()
+    }
+
+    private fun observeAuthStateAndSetup() {
+        viewModelScope.launch {
+            authRepository.authState()
+                .collect { state ->
+                    if (state is AuthState.Authenticated) {
+                        accountSetupUseCase.execute(state.userId)
+                    }
+                }
+        }
+    }
+
+    val authState: StateFlow<AuthState> = authRepository.authState()
 
     fun signUpWithEmail(email: String, password: String) {
-        _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
                 authRepository.signUpWithEmail(
@@ -28,24 +44,29 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 ).collect { response ->
                     when (response) {
                         is AuthResponse.Success -> {
-                            _authState.value = AuthState.Authenticated
+                            Log.d(
+                                "AuthViewModel",
+                                "Success response received when signing up with email"
+                            )
+                            authRepository.saveUser()
+                            Log.e(
+                                "AuthViewModel",
+                                "successfully saved user to supabase"
+                            )
                         }
 
                         is AuthResponse.Error -> {
-                            _authState.value = AuthState.Error(response.message)
                             Log.e("AuthViewModel", "Sign up with Email failed: ${response.message}")
                         }
                     }
                 }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Unexpected error occurred")
                 Log.e("AuthViewModel", "Sign up with Email exception", e)
             }
         }
     }
 
     fun signInWithEmail(email: String, password: String) {
-        _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
                 authRepository.signInWithEmail(
@@ -53,35 +74,38 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 ).collect { response ->
                     when (response) {
                         is AuthResponse.Success -> {
-                            _authState.value = AuthState.Authenticated
+                            Log.d(
+                                "AuthViewModel",
+                                "Success response received when signing in with email"
+                            )
                         }
 
                         is AuthResponse.Error -> {
-                            _authState.value = AuthState.Error(response.message)
                             Log.e("AuthViewModel", "Sign in with Email failed: ${response.message}")
                         }
                     }
                 }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Unexpected error occurred")
                 Log.e("AuthViewModel", "Sign in with Email exception", e)
             }
         }
     }
 
     fun signInWithGoogle(context: Context, serverClientId: String) {
-        _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
                 authRepository.signInWithGoogle(context = context, serverClientId = serverClientId)
                     .collect { response ->
                         when (response) {
                             is AuthResponse.Success -> {
-                                _authState.value = AuthState.Authenticated
+                                authRepository.saveUser()
+                                Log.d(
+                                    "AuthViewModel",
+                                    "Success response received when signing in with google"
+                                )
                             }
 
                             is AuthResponse.Error -> {
-                                _authState.value = AuthState.Error(response.message)
                                 Log.e(
                                     "AuthViewModel",
                                     "Sign in with Google failed: ${response.message}"
@@ -90,7 +114,6 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                         }
                     }
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Unexpected error occurred")
                 Log.e("AuthViewModel", "Sign in with Google exception", e)
             }
 
@@ -101,11 +124,11 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             when (authRepository.signOut()) {
                 is AuthResponse.Success -> {
-                    _authState.value = AuthState.Unauthenticated
+                    Log.e("AuthViewModel", "Successfully signed out")
                 }
 
                 is AuthResponse.Error -> {
-                    _authState.value = AuthState.Error("Error occurred during sign out")
+                    Log.e("AuthViewModel", "Error occurred during sign out")
                 }
             }
         }
@@ -117,10 +140,16 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     companion object {
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
+        fun Factory(
+            remoteDataSource: RemoteDataSource,
+            accountSetupUseCase: AccountSetupUseCase
+        ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 AuthViewModel(
-                    authRepository = AuthRepositoryImpl()
+                    authRepository = AuthRepositoryImpl(
+                        remoteDataSource = remoteDataSource
+                    ),
+                    accountSetupUseCase = accountSetupUseCase,
                 )
             }
         }

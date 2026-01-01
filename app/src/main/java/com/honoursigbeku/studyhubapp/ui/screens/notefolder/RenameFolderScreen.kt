@@ -29,7 +29,7 @@ import com.honoursigbeku.studyhubapp.ui.component.field.TitleTextField
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenameFolderScreen(
-    folderId: Int,
+    folderId: String,
     navController: NavController,
     currentFolderName: String,
     viewModel: NoteFolderViewModel
