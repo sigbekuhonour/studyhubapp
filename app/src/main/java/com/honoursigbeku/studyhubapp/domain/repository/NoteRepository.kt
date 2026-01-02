@@ -15,5 +15,4 @@ interface NoteRepository {
         content: String? = null
     )
 
-    suspend fun syncNotesFromRemote()
 }

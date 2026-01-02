@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "folders"
 )
 data class FolderEntity(
-    @PrimaryKey val folderId: String = java.util.UUID.randomUUID().toString(),
+    @PrimaryKey val folderId: String,
     val userId: String,
     val title: String
 )

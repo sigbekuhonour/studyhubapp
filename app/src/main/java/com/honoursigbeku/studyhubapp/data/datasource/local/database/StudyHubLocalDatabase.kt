@@ -20,7 +20,7 @@ abstract class StudyHubLocalDatabase : RoomDatabase() {
     abstract fun flashcardDao(): FlashcardDao
 
     companion object {
-        const val NAME = "StudyHub"
+        const val NAME = "StudyHub.db"
 
         @Volatile
         private var INSTANCE: StudyHubLocalDatabase? = null
@@ -29,7 +29,7 @@ abstract class StudyHubLocalDatabase : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext, StudyHubLocalDatabase::class.java, NAME
-                ).addCallback(object : Callback() {}).build()
+                ).build()
                 INSTANCE = instance
                 instance
             }

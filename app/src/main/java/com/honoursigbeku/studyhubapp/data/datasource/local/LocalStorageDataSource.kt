@@ -1,5 +1,6 @@
 package com.honoursigbeku.studyhubapp.data.datasource.local
 
+import android.util.Log
 import com.honoursigbeku.studyhubapp.data.datasource.local.dao.FlashcardDao
 import com.honoursigbeku.studyhubapp.data.datasource.local.dao.FolderDao
 import com.honoursigbeku.studyhubapp.data.datasource.local.dao.NoteDao
@@ -31,6 +32,9 @@ class LocalStorageDataSourceImpl(
     override fun getAllFlashcards(): Flow<List<Flashcard>> =
         flashcardDao.getAllFlashcards().map { it.map(FlashcardEntity::toDomainModel) }
 
+    override suspend fun getFolderCount(userId: String): Int =
+        folderDao.getFolderCount(userId)
+
 
     override suspend fun deleteFolderById(folderId: String, userId: String) {
         folderDao.deleteFolderById(folderId, userId)
@@ -46,6 +50,9 @@ class LocalStorageDataSourceImpl(
 
     override suspend fun addFolder(folder: FolderEntity) {
         folderDao.addFolder(folder)
+        Log.i("LocalStorageDataSourceImpl", "we did get here")
+        val count = folderDao.getFolderCount(userId = folder.userId)
+        Log.d("ROOM_SAVE", "Total folders for this user in Room: $count")
     }
 
     override suspend fun addFlashcard(flashcard: FlashcardEntity) {
@@ -75,6 +82,10 @@ class LocalStorageDataSourceImpl(
             folderId = folderId,
             userId = userId
         )
+    }
+
+    override suspend fun insertAllFolders(entities: List<FolderEntity>) {
+        folderDao.insertAllFolders(entities)
     }
 }
 

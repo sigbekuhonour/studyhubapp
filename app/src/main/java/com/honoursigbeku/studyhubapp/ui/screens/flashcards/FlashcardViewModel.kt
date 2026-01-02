@@ -5,9 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.honoursigbeku.studyhubapp.data.datasource.local.LocalDataSource
-import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
-import com.honoursigbeku.studyhubapp.data.repository.FlashcardRepositoryImpl
 import com.honoursigbeku.studyhubapp.domain.repository.FlashcardRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -45,14 +42,11 @@ class FlashcardViewModel(
 
     companion object {
         fun Factory(
-            localDataSource: LocalDataSource, remoteDataSource: RemoteDataSource
+            flashcardRepository: FlashcardRepository
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 FlashcardViewModel(
-                    flashcardRepository = FlashcardRepositoryImpl(
-                        localDataSourceImpl = localDataSource,
-                        remoteDataSourceImpl = remoteDataSource
-                    )
+                    flashcardRepository = flashcardRepository
                 )
             }
         }

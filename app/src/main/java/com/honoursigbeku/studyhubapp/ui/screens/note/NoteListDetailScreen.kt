@@ -19,10 +19,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -40,7 +39,20 @@ fun NoteListDetailScreen(
     val textFieldState = rememberTextFieldState()
     val notes = viewModel.notes.collectAsState().value
     val noOfNotes = notes.filter { note -> note.folderId == folderId }.size
-    var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
+    val searchResults by remember {
+        derivedStateOf {
+            val query = textFieldState.text.toString()
+            if (query.isEmpty()) {
+                emptyList()
+            } else {
+                notes.filter { note ->
+                    note.title.contains(query, ignoreCase = true)
+                }.map { note ->
+                    note.title
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -100,12 +112,25 @@ fun NoteListDetailScreen(
             SimpleSearchBar(
                 textFieldState = textFieldState,
                 searchResults = searchResults,
+                onSearch = { query ->
+                    val firstResult = notes.firstOrNull {
+                        it.title.contains(query, ignoreCase = true)
+                    }
+                    firstResult?.let { note ->
+                        navController.navigate("notePage/$folderName/$folderId/${note.title}")
+                    }
+                },
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
                 placeholderText = folderName,
-                onSearch = {})
+                onResultClick = { title ->
+                    val selectedNote = notes.firstOrNull { it.title == title }
+                    selectedNote?.let { note ->
+                        navController.navigate("notePage/$folderName/$folderId/${note.title}")
+                    }
+                })
             Spacer(modifier = Modifier.padding(vertical = 20.dp))
             NoteDisplayCard(
                 folderName = folderName,

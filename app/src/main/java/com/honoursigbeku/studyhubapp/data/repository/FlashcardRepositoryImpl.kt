@@ -9,20 +9,20 @@ import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 class FlashcardRepositoryImpl(
-    private val localDataSourceImpl: LocalDataSource,
-    private val remoteDataSourceImpl: RemoteDataSource
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource
 ) : FlashcardRepository {
-    override fun getAllFlashcards(): Flow<List<Flashcard>> = localDataSourceImpl.getAllFlashcards()
+    override fun getAllFlashcards(): Flow<List<Flashcard>> = localDataSource.getAllFlashcards()
 
 
     override suspend fun addFlashcard(ownerNoteId: String, content: String) {
         val flashcardId = UUID.randomUUID().toString()
-        localDataSourceImpl.addFlashcard(
+        localDataSource.addFlashcard(
             FlashcardEntity(
                 flashcardId = flashcardId, ownerNoteId = ownerNoteId, content = content
             )
         )
-        remoteDataSourceImpl.addFlashcard(
+        remoteDataSource.addFlashcard(
             flashcard = Flashcard(
                 id = flashcardId, ownerNoteId = ownerNoteId, content = content
             )
@@ -30,23 +30,8 @@ class FlashcardRepositoryImpl(
     }
 
     override suspend fun deleteFlashcardByNoteId(flashcardId: String, noteId: String) {
-        localDataSourceImpl.deleteFlashcardById(flashcardId, noteId)
-        remoteDataSourceImpl.deleteFlashcardById(flashcardId = flashcardId, noteId = noteId)
+        localDataSource.deleteFlashcardById(flashcardId, noteId)
+        remoteDataSource.deleteFlashcardById(flashcardId = flashcardId, noteId = noteId)
     }
 
-    override suspend fun syncFlashcardsFromRemote() {
-        val remoteFlashcards = remoteDataSourceImpl.getAllFlashcards()
-        if (remoteFlashcards.isNotEmpty()) {
-            remoteFlashcards.forEach { flashcard ->
-                localDataSourceImpl.addFlashcard(
-                    flashcard = FlashcardEntity(
-                        flashcardId = flashcard.id,
-                        ownerNoteId = flashcard.ownerNoteId,
-                        content = flashcard.content
-                    )
-                )
-            }
-        }
-
-    }
 }

@@ -7,32 +7,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
-import com.honoursigbeku.studyhubapp.data.repository.AuthRepositoryImpl
 import com.honoursigbeku.studyhubapp.domain.repository.AuthRepository
-import com.honoursigbeku.studyhubapp.feature.usecase.AccountSetupUseCase
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
     private val authRepository: AuthRepository,
-    private val accountSetupUseCase: AccountSetupUseCase
 ) : ViewModel() {
-
-    init {
-        observeAuthStateAndSetup()
-    }
-
-    private fun observeAuthStateAndSetup() {
-        viewModelScope.launch {
-            authRepository.authState()
-                .collect { state ->
-                    if (state is AuthState.Authenticated) {
-                        accountSetupUseCase.execute(state.userId)
-                    }
-                }
-        }
-    }
 
     val authState: StateFlow<AuthState> = authRepository.authState()
 
@@ -53,6 +34,7 @@ class AuthViewModel(
                                 "AuthViewModel",
                                 "successfully saved user to supabase"
                             )
+                            authRepository.onboardUser()
                         }
 
                         is AuthResponse.Error -> {
@@ -77,6 +59,11 @@ class AuthViewModel(
                             Log.d(
                                 "AuthViewModel",
                                 "Success response received when signing in with email"
+                            )
+                            authRepository.onboardUser()
+                            Log.d(
+                                "AuthViewModel",
+                                "User onboarding completed"
                             )
                         }
 
@@ -103,6 +90,11 @@ class AuthViewModel(
                                     "AuthViewModel",
                                     "Success response received when signing in with google"
                                 )
+                                authRepository.onboardUser()
+                                Log.d(
+                                    "AuthViewModel",
+                                    "User onboarding completed"
+                                )
                             }
 
                             is AuthResponse.Error -> {
@@ -120,7 +112,7 @@ class AuthViewModel(
         }
     }
 
-    fun signOut(): StateFlow<AuthState> {
+    fun signOut() {
         viewModelScope.launch {
             when (authRepository.signOut()) {
                 is AuthResponse.Success -> {
@@ -132,7 +124,6 @@ class AuthViewModel(
                 }
             }
         }
-        return authState
     }
 
     fun isUserSignedIn(): Boolean {
@@ -141,15 +132,11 @@ class AuthViewModel(
 
     companion object {
         fun Factory(
-            remoteDataSource: RemoteDataSource,
-            accountSetupUseCase: AccountSetupUseCase
+            authRepository: AuthRepository
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 AuthViewModel(
-                    authRepository = AuthRepositoryImpl(
-                        remoteDataSource = remoteDataSource
-                    ),
-                    accountSetupUseCase = accountSetupUseCase,
+                    authRepository = authRepository
                 )
             }
         }

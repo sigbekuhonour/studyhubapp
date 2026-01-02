@@ -1,46 +1,53 @@
 package com.honoursigbeku.studyhubapp.ui.screens.notefolder
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.honoursigbeku.studyhubapp.R
-import com.honoursigbeku.studyhubapp.data.datasource.local.LocalDataSource
-import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
-import com.honoursigbeku.studyhubapp.data.repository.AuthRepositoryImpl
-import com.honoursigbeku.studyhubapp.data.repository.NoteFolderRepositoryImpl
 import com.honoursigbeku.studyhubapp.domain.repository.AuthRepository
 import com.honoursigbeku.studyhubapp.domain.repository.NoteFolderRepository
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class NoteFolderViewModel(
     private val authRepository: AuthRepository,
     private val folderRepository: NoteFolderRepository,
 ) : ViewModel() {
 
 
-    private val userId = authRepository.getCurrentUserId()
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     val folders: StateFlow<List<Folder>> = authRepository.authState()
+        .onStart {
+            val currentId = authRepository.getCurrentUserId()
+            if (currentId != null) emit(AuthState.Authenticated(currentId))
+        }
         .flatMapLatest { state ->
-            if (state is AuthState.Authenticated) {
-                folderRepository.getAllFolders(state.userId)
-            } else {
-                flowOf(emptyList())
+            when (state) {
+                is AuthState.Authenticated -> {
+                    Log.i(
+                        "NoteFolderViewModel",
+                        "User detected: ${state.userId}. Fetching folders..."
+                    )
+                    folderRepository.getAllFolders(state.userId)
+                }
+
+                else -> {
+                    Log.i("NoteFolderViewModel", "User not authenticated yet.")
+                    flowOf(emptyList()) // Clear folders on sign out
+                }
             }
         }
-        .distinctUntilChanged()
         .map { folderList ->
             folderList.map { eachFolder ->
                 Folder(
@@ -52,9 +59,10 @@ class NoteFolderViewModel(
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
+
 
     fun getFolderContentSize(folderId: String): StateFlow<Int> {
         return folderRepository.getFolderContentSize(folderId)
@@ -73,7 +81,7 @@ class NoteFolderViewModel(
 
     fun addFolder(name: String) {
         viewModelScope.launch {
-            userId?.let {
+            authRepository.getCurrentUserId()?.let {
                 folderRepository.addFolder(name, it)
             }
         }
@@ -81,7 +89,7 @@ class NoteFolderViewModel(
 
     fun updateFolderName(folderId: String, currentFolderName: String) {
         viewModelScope.launch {
-            userId?.let {
+            authRepository.getCurrentUserId()?.let {
                 folderRepository.updateFolderName(
                     folderId = folderId,
                     newFolderName = currentFolderName,
@@ -93,26 +101,23 @@ class NoteFolderViewModel(
 
     fun deleteFolder(folderId: String) {
         viewModelScope.launch {
-            userId?.let {
+            authRepository.getCurrentUserId()?.let {
                 folderRepository.deleteFolder(folderId = folderId, userId = it)
             }
         }
     }
 
 
+    // In your Factory, you should be passing in the REPOSITORIES, not the DataSources
     companion object {
         fun Factory(
-            localDataSource: LocalDataSource,
-            remoteDataSource: RemoteDataSource,
+            authRepository: AuthRepository,
+            folderRepository: NoteFolderRepository,
         ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val folderRepo = NoteFolderRepositoryImpl(
-                    localDataSourceImpl = localDataSource,
-                    remoteDataSourceImpl = remoteDataSource
-                )
                 NoteFolderViewModel(
-                    authRepository = AuthRepositoryImpl(remoteDataSource),
-                    folderRepository = folderRepo
+                    authRepository = authRepository,
+                    folderRepository = folderRepository
                 )
             }
         }

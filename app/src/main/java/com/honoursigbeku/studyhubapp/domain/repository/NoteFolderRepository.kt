@@ -10,6 +10,5 @@ interface NoteFolderRepository {
     suspend fun addFolder(name: String, userId: String)
     suspend fun deleteFolder(folderId: String, userId: String)
     suspend fun updateFolderName(folderId: String, userId: String, newFolderName: String)
-    suspend fun syncFoldersFromRemote(userId: String)
 }
 

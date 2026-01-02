@@ -27,8 +27,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,8 +59,22 @@ fun NoteFolderDetailScreen(
     val actionText = if (isActionTextClicked) "Done" else "Edit"
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val textFieldState = rememberTextFieldState()
-    var searchResults by rememberSaveable { mutableStateOf(listOf<String>()) }
     val folders = noteFolderViewModel.folders.collectAsState().value
+    val searchResults by remember {
+        derivedStateOf {
+            val query = textFieldState.text.toString()
+            if (query.isEmpty()) {
+                emptyList()
+            } else {
+                folders.filter { folder ->
+                    folder.title.contains(query, ignoreCase = true)
+                }.map { folder ->
+                    folder.title
+                }
+            }
+        }
+    }
+
 
     Scaffold(topBar = {
         TopAppBar(
@@ -135,8 +151,21 @@ fun NoteFolderDetailScreen(
                     .align(Alignment.CenterHorizontally)
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp),
-                placeholderText = "folders",
-                onSearch = {},
+                placeholderText = "Search folders",
+                onSearch = { query ->
+                    val firstResult = folders.firstOrNull {
+                        it.title.contains(query, ignoreCase = true)
+                    }
+                    firstResult?.let { folder ->
+                        navController.navigate("noteListPage/${folder.title}/${folder.id}")
+                    }
+                },
+                onResultClick = { title ->
+                    val selectedFolder = folders.firstOrNull { it.title == title }
+                    selectedFolder?.let { folder ->
+                        navController.navigate("noteListPage/${folder.title}/${folder.id}")
+                    }
+                },
             )
             if (newFolderButtonIsClicked) {
                 SimpleDialog(

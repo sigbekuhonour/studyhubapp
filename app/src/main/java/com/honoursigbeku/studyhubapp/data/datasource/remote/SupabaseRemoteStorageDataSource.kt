@@ -49,6 +49,19 @@ class SupabaseRemoteStorageDataSourceImpl(private val client: SupabaseClient) : 
         }
     }
 
+    override suspend fun getFoldersCount(userId: String): Int {
+        val remoteFolderDto = client.from("Folder").select {
+            filter {
+                eq("userId", userId)
+            }
+        }.decodeList<FolderDto>()
+        Log.i(
+            "SupabaseRemoteDataSource",
+            "Successfully retrieved all folders belonging to user $userId from supabase with count - ${remoteFolderDto.size}"
+        )
+        return remoteFolderDto.size
+    }
+
 
     override suspend fun getAllNotes(): List<Note> = withContext(Dispatchers.IO) {
         val remoteNoteDto = client.from("Note").select().decodeList<NoteDto>()

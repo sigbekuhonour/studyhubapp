@@ -75,7 +75,9 @@ fun LoginScreen(
             navigationIcon = {
                 Icon(
                     painter = painterResource(R.drawable.arrow_back),
-                    modifier = Modifier.clickable { navController.navigate("signupPage") },
+                    modifier = Modifier.clickable {
+                        navController.navigate("signupPage")
+                    },
                     contentDescription = null
                 )
             },

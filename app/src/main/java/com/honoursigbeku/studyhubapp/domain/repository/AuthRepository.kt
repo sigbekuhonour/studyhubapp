@@ -27,5 +27,6 @@ interface AuthRepository {
     ): Flow<AuthResponse>
 
     suspend fun signOut(): AuthResponse
+    suspend fun onboardUser()
 
 }

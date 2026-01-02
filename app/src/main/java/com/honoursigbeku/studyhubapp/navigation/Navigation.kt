@@ -1,6 +1,7 @@
 package com.honoursigbeku.studyhubapp.navigation
 
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -9,15 +10,20 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.honoursigbeku.studyhubapp.data.datasource.local.LocalStorageDataSourceProvider
 import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteStorageDataSourceProvider
-import com.honoursigbeku.studyhubapp.feature.usecase.AccountSetupUseCaseImpl
+import com.honoursigbeku.studyhubapp.data.repository.AuthRepositoryImpl
+import com.honoursigbeku.studyhubapp.data.repository.FlashcardRepositoryImpl
+import com.honoursigbeku.studyhubapp.data.repository.NoteFolderRepositoryImpl
+import com.honoursigbeku.studyhubapp.data.repository.NoteRepositoryImpl
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
@@ -31,25 +37,38 @@ import com.honoursigbeku.studyhubapp.ui.screens.notefolder.NoteFolderViewModel
 import com.honoursigbeku.studyhubapp.ui.screens.notefolder.RenameFolderScreen
 
 
+@OptIn(UnstableApi::class)
 @Composable
 fun AppNav(modifier: Modifier) {
     val navController = rememberNavController()
     val context = LocalContext.current
     val localDataSource = LocalStorageDataSourceProvider.getInstance(context)
     val remoteDataSource = RemoteStorageDataSourceProvider.getInstance
+
+    val authRepository = remember {
+        AuthRepositoryImpl(localDataSource, remoteDataSource)
+    }
     val authViewModel: AuthViewModel = viewModel(
         factory = AuthViewModel.Factory(
-            remoteDataSource = remoteDataSource,
-            accountSetupUseCase = AccountSetupUseCaseImpl(
-                localDataSource = localDataSource,
-                remoteDataSource = remoteDataSource
-            )
+            authRepository = authRepository
         )
     )
+    val folderRepository = remember {
+        NoteFolderRepositoryImpl(localDataSource, remoteDataSource)
+    }
+    val noteRepository = remember {
+        NoteRepositoryImpl(localDataSource, remoteDataSource)
+    }
+    val flashcardRepository = remember {
+        FlashcardRepositoryImpl(
+            localDataSource = localDataSource,
+            remoteDataSource = remoteDataSource
+        )
+    }
 
     NavHost(
         navController = navController,
-        startDestination = if (authViewModel.isUserSignedIn()) "LandingPage" else "signupPage",
+        startDestination = if (authViewModel.isUserSignedIn()) "landingPage" else "signupPage",
         enterTransition = { fadeIn() + slideInHorizontally() },
         exitTransition = { fadeOut() + slideOutHorizontally() }) {
 
@@ -68,8 +87,8 @@ fun AppNav(modifier: Modifier) {
         composable(route = "landingPage") {
             val noteFolderViewModel: NoteFolderViewModel = viewModel(
                 factory = NoteFolderViewModel.Factory(
-                    localDataSource = localDataSource,
-                    remoteDataSource = remoteDataSource,
+                    authRepository = authRepository,
+                    folderRepository = folderRepository
                 )
             )
             NoteFolderDetailScreen(
@@ -87,10 +106,9 @@ fun AppNav(modifier: Modifier) {
             route = "noteListPage/{folderName}/{folderId}",
             enterTransition = { slideInVertically() },
         ) { navBackStackEntry ->
-            val viewModel: NoteViewModel = viewModel(
+            val noteViewModel: NoteViewModel = viewModel(
                 factory = NoteViewModel.Factory(
-                    localDataSource = localDataSource, remoteDataSource = remoteDataSource
-
+                    noteRepository = noteRepository
                 )
             )
             val folderName = navBackStackEntry.arguments?.getString("folderName")
@@ -99,7 +117,7 @@ fun AppNav(modifier: Modifier) {
                 NoteListDetailScreen(
                     folderName = folderName,
                     folderId = folderId,
-                    viewModel = viewModel,
+                    viewModel = noteViewModel,
                     navController = navController
                 )
             }
@@ -109,7 +127,8 @@ fun AppNav(modifier: Modifier) {
             enterTransition = { scaleIn() }) { navBackStackEntry ->
             val noteFolderViewModel: NoteFolderViewModel = viewModel(
                 factory = NoteFolderViewModel.Factory(
-                    localDataSource = localDataSource, remoteDataSource = remoteDataSource,
+                    authRepository = authRepository,
+                    folderRepository = folderRepository
                 )
             )
             val folderName = navBackStackEntry.arguments?.getString("folderName")
@@ -125,10 +144,9 @@ fun AppNav(modifier: Modifier) {
 
         }
         composable(route = "notePage/{folderName}/{folderId}/{title}") { navBackStackEntry ->
-            val viewModel: NoteViewModel = viewModel(
+            val noteViewModel: NoteViewModel = viewModel(
                 factory = NoteViewModel.Factory(
-                    localDataSource = localDataSource, remoteDataSource = remoteDataSource
-
+                    noteRepository = noteRepository
                 )
             )
             val folderName = requireNotNull(navBackStackEntry.arguments?.getString("folderName"))
@@ -136,12 +154,12 @@ fun AppNav(modifier: Modifier) {
                 requireNotNull(navBackStackEntry.arguments?.getString("folderId"))
             val title = requireNotNull(navBackStackEntry.arguments?.getString("title"))
             LaunchedEffect(Unit) {
-                viewModel.initializeNote(folderId, title)
+                noteViewModel.initializeNote(folderId, title)
             }
             NoteEditorScreen(
                 folderName = folderName,
                 folderId = folderId,
-                viewModel = viewModel,
+                viewModel = noteViewModel,
                 navController = navController,
                 title = title
             )
@@ -149,8 +167,7 @@ fun AppNav(modifier: Modifier) {
         composable(route = "flashcardPage/{noteId}") { navBackStackEntry ->
             val viewModel: FlashcardViewModel = viewModel(
                 factory = FlashcardViewModel.Factory(
-                    localDataSource = localDataSource, remoteDataSource = remoteDataSource
-
+                    flashcardRepository = flashcardRepository,
                 )
             )
             val noteId = requireNotNull(navBackStackEntry.arguments?.getString("noteId"))

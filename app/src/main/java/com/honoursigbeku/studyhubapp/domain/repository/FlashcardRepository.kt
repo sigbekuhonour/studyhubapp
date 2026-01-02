@@ -9,5 +9,4 @@ interface FlashcardRepository {
     suspend fun addFlashcard(ownerNoteId: String, content: String)
     suspend fun deleteFlashcardByNoteId(flashcardId: String, noteId: String)
 
-    suspend fun syncFlashcardsFromRemote()
 }

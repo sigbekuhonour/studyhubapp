@@ -15,6 +15,12 @@ interface FolderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addFolder(folder: FolderEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllFolders(folders: List<FolderEntity>)
+
+    @Query("SELECT COUNT(*) FROM folders WHERE userId = :userId")
+    suspend fun getFolderCount(userId: String): Int
+
     @Query("DELETE FROM folders WHERE folderId = :id AND userId = :userId AND title NOT IN ('Quick Notes','Shared Notes','Deleted Notes')")
     suspend fun deleteFolderById(id: String, userId: String)
 

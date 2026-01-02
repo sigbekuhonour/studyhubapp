@@ -8,6 +8,7 @@ import com.honoursigbeku.studyhubapp.domain.model.User
 interface RemoteDataSource {
     suspend fun addNewUser(user: User)
     suspend fun getAllFolders(userId: String): List<Folder>
+    suspend fun getFoldersCount(userId: String): Int
     suspend fun getAllNotes(): List<Note>
     suspend fun getAllFlashcards(): List<Flashcard>
     suspend fun deleteFolderById(folderId: String)

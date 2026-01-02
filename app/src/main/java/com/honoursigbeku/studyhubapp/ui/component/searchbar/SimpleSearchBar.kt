@@ -36,6 +36,7 @@ fun SimpleSearchBar(
     onSearch: (String) -> Unit,
     placeholderText: String,
     searchResults: List<String>,
+    onResultClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -58,7 +59,7 @@ fun SimpleSearchBar(
                         expanded = false
                     },
                     placeholder = {
-                        Text(text = "Search $placeholderText")
+                        Text(text = placeholderText)
                     },
                     leadingIcon = {
                         Icon(
@@ -68,7 +69,10 @@ fun SimpleSearchBar(
                     },
                     trailingIcon = {
                         if (expanded) {
-                            IconButton(onClick = { expanded = !expanded }) {
+                            IconButton(onClick = {
+                                textFieldState.edit { replace(0, length, "") }
+                                expanded = !expanded
+                            }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.close),
                                     contentDescription = "Clear search"
@@ -85,14 +89,27 @@ fun SimpleSearchBar(
             onExpandedChange = { expanded = it },
         ) {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                searchResults.forEach { result ->
+                searchResults.forEach { title ->
                     ListItem(
-                        headlineContent = { Text(result) }, modifier = Modifier
+                        headlineContent = { Text(title) },
+                        modifier = Modifier
                             .clickable {
-                                textFieldState.edit { replace(0, length, result) }
+                                onResultClick(title)
                                 expanded = false
                             }
-                            .fillMaxWidth())
+                            .fillMaxWidth()
+                    )
+                }
+                if (searchResults.isEmpty() && textFieldState.text.isNotEmpty()) {
+                    ListItem(
+                        headlineContent = {
+                            Text(
+                                "No results found",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
                 }
             }
         }

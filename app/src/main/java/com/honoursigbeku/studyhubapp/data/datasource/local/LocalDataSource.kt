@@ -12,10 +12,12 @@ interface LocalDataSource {
     fun getAllFolders(userId: String): Flow<List<Folder>>
     fun getAllNotes(): Flow<List<Note>>
     fun getAllFlashcards(): Flow<List<Flashcard>>
+    suspend fun getFolderCount(userId: String): Int
     suspend fun deleteFolderById(folderId: String, userId: String)
     suspend fun deleteFlashcardById(flashcardId: String, noteId: String)
     suspend fun deleteNoteById(folderId: String, noteId: String)
     suspend fun addFolder(folder: FolderEntity)
+    suspend fun insertAllFolders(entities: List<FolderEntity>)
     suspend fun addFlashcard(flashcard: FlashcardEntity)
     suspend fun addNote(note: NoteEntity)
     suspend fun updateFlashcardContent(newContent: String, id: String)

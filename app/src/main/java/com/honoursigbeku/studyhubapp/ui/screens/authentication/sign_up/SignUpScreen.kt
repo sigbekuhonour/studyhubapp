@@ -56,7 +56,6 @@ fun SignUpScreen(
                 Toast.makeText(
                     context, "Authentication successful", Toast.LENGTH_SHORT
                 ).show()
-
                 navController.navigate("LandingPage")
             }
 

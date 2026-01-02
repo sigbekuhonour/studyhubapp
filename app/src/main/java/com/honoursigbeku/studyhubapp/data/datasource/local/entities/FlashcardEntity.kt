@@ -19,7 +19,7 @@ import androidx.room.PrimaryKey
     indices = [Index("ownerNoteId")]
 )
 data class FlashcardEntity(
-    @PrimaryKey val flashcardId: String = java.util.UUID.randomUUID().toString(),
+    @PrimaryKey val flashcardId: String,
     val ownerNoteId: String,
     val content: String
 )
