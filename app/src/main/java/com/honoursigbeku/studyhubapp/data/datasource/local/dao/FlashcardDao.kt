@@ -20,4 +20,7 @@ interface FlashcardDao {
 
     @Query("UPDATE flashcards SET content = :newContent WHERE flashcardId = :id")
     suspend fun updateFlashcardContent(newContent: String, id: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllFlashcards(flashcardEntities: List<FlashcardEntity>)
 }

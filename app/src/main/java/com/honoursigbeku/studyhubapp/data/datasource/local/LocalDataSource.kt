@@ -29,4 +29,6 @@ interface LocalDataSource {
     )
 
     suspend fun updateFolderName(folderId: String, userId: String, newFolderName: String)
+    fun insertAllNotes(noteEntities: List<NoteEntity>)
+    fun insertAllFlashcards(flashcardEntities: List<FlashcardEntity>)
 }

@@ -23,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -44,9 +46,8 @@ fun LoginScreen(
     val context = LocalContext.current
     val authState by viewModel.authState.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val serverClientId = rememberSaveable {
-        context.getString(R.string.default_web_client_id)
-    }
+    val serverClientId = stringResource(R.string.default_web_client_id)
+
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
@@ -109,6 +110,12 @@ fun LoginScreen(
                         serverClientId = serverClientId,
                     )
                 })
+            Text(
+                text = "Forgot password?",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.clickable {},
+                textDecoration = TextDecoration.Underline
+            )
         }
     }
 }

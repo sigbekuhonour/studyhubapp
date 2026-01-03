@@ -20,26 +20,21 @@ class AuthViewModel(
     fun signUpWithEmail(email: String, password: String) {
         viewModelScope.launch {
             try {
-                authRepository.signUpWithEmail(
+                val response = authRepository.signUpWithEmail(
                     email = email, password = password
-                ).collect { response ->
-                    when (response) {
-                        is AuthResponse.Success -> {
-                            Log.d(
-                                "AuthViewModel",
-                                "Success response received when signing up with email"
-                            )
-                            authRepository.saveUser()
-                            Log.e(
-                                "AuthViewModel",
-                                "successfully saved user to supabase"
-                            )
-                            authRepository.onboardUser()
-                        }
+                )
+                when (response) {
+                    is AuthResponse.Success -> {
+                        Log.d(
+                            "AuthViewModel", "Success response received when signing up with email"
+                        )
+                        Log.e(
+                            "AuthViewModel", "successfully saved user to supabase"
+                        )
+                    }
 
-                        is AuthResponse.Error -> {
-                            Log.e("AuthViewModel", "Sign up with Email failed: ${response.message}")
-                        }
+                    is AuthResponse.Error -> {
+                        Log.e("AuthViewModel", "Sign up with Email failed: ${response.message}")
                     }
                 }
             } catch (e: Exception) {
@@ -48,28 +43,25 @@ class AuthViewModel(
         }
     }
 
+
     fun signInWithEmail(email: String, password: String) {
         viewModelScope.launch {
             try {
-                authRepository.signInWithEmail(
+                val response = authRepository.signInWithEmail(
                     email = email, password = password
-                ).collect { response ->
-                    when (response) {
-                        is AuthResponse.Success -> {
-                            Log.d(
-                                "AuthViewModel",
-                                "Success response received when signing in with email"
-                            )
-                            authRepository.onboardUser()
-                            Log.d(
-                                "AuthViewModel",
-                                "User onboarding completed"
-                            )
-                        }
+                )
+                when (response) {
+                    is AuthResponse.Success -> {
+                        Log.d(
+                            "AuthViewModel", "Success response received when signing in with email"
+                        )
+                        Log.d(
+                            "AuthViewModel", "User onboarding completed"
+                        )
+                    }
 
-                        is AuthResponse.Error -> {
-                            Log.e("AuthViewModel", "Sign in with Email failed: ${response.message}")
-                        }
+                    is AuthResponse.Error -> {
+                        Log.e("AuthViewModel", "Sign in with Email failed: ${response.message}")
                     }
                 }
             } catch (e: Exception) {
@@ -81,30 +73,26 @@ class AuthViewModel(
     fun signInWithGoogle(context: Context, serverClientId: String) {
         viewModelScope.launch {
             try {
-                authRepository.signInWithGoogle(context = context, serverClientId = serverClientId)
-                    .collect { response ->
-                        when (response) {
-                            is AuthResponse.Success -> {
-                                authRepository.saveUser()
-                                Log.d(
-                                    "AuthViewModel",
-                                    "Success response received when signing in with google"
-                                )
-                                authRepository.onboardUser()
-                                Log.d(
-                                    "AuthViewModel",
-                                    "User onboarding completed"
-                                )
-                            }
+                val response = authRepository.signInWithGoogle(
+                    context = context,
+                    serverClientId = serverClientId
+                )
 
-                            is AuthResponse.Error -> {
-                                Log.e(
-                                    "AuthViewModel",
-                                    "Sign in with Google failed: ${response.message}"
-                                )
-                            }
-                        }
+                when (response) {
+                    is AuthResponse.Success -> {
+                        Log.d(
+                            "AuthViewModel",
+                            "Success response received when signing in with google"
+                        )
                     }
+
+                    is AuthResponse.Error -> {
+                        Log.e(
+                            "AuthViewModel",
+                            "Sign in with Google failed: ${response.message}"
+                        )
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Sign in with Google exception", e)
             }

@@ -84,6 +84,14 @@ class LocalStorageDataSourceImpl(
         )
     }
 
+    override fun insertAllNotes(noteEntities: List<NoteEntity>) {
+        noteDao.insertAllNotes(noteEntities)
+    }
+
+    override fun insertAllFlashcards(flashcardEntities: List<FlashcardEntity>) {
+        flashcardDao.insertAllFlashcards(flashcardEntities)
+    }
+
     override suspend fun insertAllFolders(entities: List<FolderEntity>) {
         folderDao.insertAllFolders(entities)
     }

@@ -132,7 +132,9 @@ fun NoteFolderDetailScreen(
                 BottomAppBarIcon(
                     icon = R.drawable.new_notes, onClick = {
                         navController.navigate(
-                            "notePage/${folders.first().title}/${folders.first().id}/New_Note"
+                            "notePage/${"Quick Notes"}/${
+                                folders.firstOrNull { it.title == "Quick Notes" }?.id
+                            }/New_Note"
                         )
                     })
             })

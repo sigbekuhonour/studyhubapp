@@ -7,12 +7,13 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.honoursigbeku.studyhubapp.data.datasource.local.LocalDataSource
+import com.honoursigbeku.studyhubapp.data.datasource.local.entities.FlashcardEntity
 import com.honoursigbeku.studyhubapp.data.datasource.local.entities.FolderEntity
+import com.honoursigbeku.studyhubapp.data.datasource.local.entities.NoteEntity
 import com.honoursigbeku.studyhubapp.data.datasource.remote.RemoteDataSource
 import com.honoursigbeku.studyhubapp.domain.model.Folder
 import com.honoursigbeku.studyhubapp.domain.model.User
@@ -22,20 +23,17 @@ import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.security.MessageDigest
 import java.util.UUID
 
 
 class AuthRepositoryImpl(
-    private val localDataSource: LocalDataSource,
-    private val remoteDataSource: RemoteDataSource
+    private val localDataSource: LocalDataSource, private val remoteDataSource: RemoteDataSource
 ) : AuthRepository {
     private val auth = Firebase.auth
 
@@ -58,136 +56,134 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun saveUser() {
-        auth.currentUser?.let {
-            remoteDataSource.addNewUser(
-                User(
-                    firebaseUserId = it.uid,
-                    email = it.email
-                )
-            )
-        }
-    }
 
     override suspend fun signInWithGoogle(
         context: Context,
         serverClientId: String,
-    ): Flow<AuthResponse> = callbackFlow {
+    ): AuthResponse {
         val googleIdOption = GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false)
             .setServerClientId(serverClientId).setAutoSelectEnabled(false).setNonce(createNonce())
             .build()
         val request = GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
-        try {
-            _authState.value = AuthState.Loading
-            val credentialManager = CredentialManager.create(context)
-            val result = credentialManager.getCredential(context = context, request = request)
-            val credential = result.credential
-            if (credential is CustomCredential) {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    try {
-                        val googleIdTokenCredential =
-                            GoogleIdTokenCredential.createFrom(credential.data)
-                        val firebaseCredential = GoogleAuthProvider.getCredential(
-                            googleIdTokenCredential.idToken, null
-                        )
-
-                        auth.signInWithCredential(firebaseCredential).addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                auth.currentUser?.let { user ->
-                                    _authState.value = AuthState.Authenticated(user.uid)
-                                    Log.d(
-                                        "AuthRepoImpl",
-                                        "Successfully change user auth state to 'Authenticated' "
-                                    )
-                                }
-                                trySend(AuthResponse.Success)
-                            } else {
-                                _authState.value = AuthState.Error(
-                                    message = it.exception?.message
-                                        ?: "An error occurred while attempting to sign in with google."
-                                )
-                                trySend(
-                                    AuthResponse.Error(
-                                        message = it.exception?.message
-                                            ?: "An error occurred while attempting to sign in with google."
-                                    )
-                                )
-                            }
-                        }
-                    } catch (e: GoogleIdTokenParsingException) {
-                        _authState.value = AuthState.Error(
-                            message = e.message ?: "GoogleIdTokenParsingException error occurred"
-                        )
-                        trySend(
-                            AuthResponse.Error(
-                                message = e.message
-                                    ?: "GoogleIdTokenParsingException error occurred"
-                            )
-                        )
-                    }
-
+        val credentialManager = CredentialManager.create(context)
+        val result = credentialManager.getCredential(context = context, request = request)
+        val credential = result.credential
+        _authState.value = AuthState.Loading
+        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+            val firebaseCredential = GoogleAuthProvider.getCredential(
+                googleIdTokenCredential.idToken, null
+            )
+            return try {
+                auth.signInWithCredential(firebaseCredential).await()
+                auth.currentUser?.let { user ->
+                    saveUser()
+                    Log.i(
+                        "AuthRepoImpl",
+                        "Successfully saved user to supabase"
+                    )
+                    onboardUser()
+                    Log.i(
+                        "AuthRepoImpl",
+                        "Successfully onboarded user with id ${user.uid}"
+                    )
+                    _authState.value = AuthState.Authenticated(user.uid)
+                    Log.i(
+                        "AuthRepoImpl",
+                        "Successfully changed user auth state to 'Authenticated'"
+                    )
+                    AuthResponse.Success
+                } ?: run {
+                    val errorMessage = "User is null after successful sign in"
+                    _authState.value = AuthState.Error(message = errorMessage)
+                    AuthResponse.Error(message = errorMessage)
                 }
+            } catch (e: Exception) {
+                val errorMessage =
+                    e.message ?: "An error occurred while attempting to sign in with Google."
+                _authState.value = AuthState.Error(message = errorMessage)
+                AuthResponse.Error(message = errorMessage)
             }
-        } catch (e: Exception) {
-            _authState.value = AuthState.Error(
-                message = e.message ?: "Error occurred during sign in with google. Please try again"
-            )
-            trySend(
-                AuthResponse.Error(
-                    message = e.message
-                        ?: "An error occurred while trying to sign in with google. Please try again in a bit."
-                )
-            )
         }
-        awaitClose()
+        return AuthResponse.Error(message = "You do not have any google account to sign in with currently. Please add a google account and try again!")
     }
 
     override suspend fun signUpWithEmail(
         email: String, password: String
-    ): Flow<AuthResponse> = callbackFlow {
+    ): AuthResponse {
         _authState.value = AuthState.Loading
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                auth.currentUser?.let {
-                    _authState.value = AuthState.Authenticated(it.uid)
-                    Log.d("AuthRepoImpl", "Successfully change user auth state to 'Authenticated' ")
-                }
-                trySend(AuthResponse.Success)
-            } else {
-                _authState.value = AuthState.Error(
-                    message = task.exception?.message
-                        ?: "Error occurred during sign up with email. Please try again"
+        return try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            auth.currentUser?.let { user ->
+                saveUser()
+                Log.i(
+                    "AuthRepoImpl",
+                    "Successfully saved user to supabase"
                 )
-                trySend(AuthResponse.Error(message = task.exception?.message ?: "Unknown error"))
+                onboardUser()
+                Log.i(
+                    "AuthRepoImpl",
+                    "Successfully onboarded user with id ${user.uid}"
+                )
+                _authState.value = AuthState.Authenticated(user.uid)
+                Log.i(
+                    "AuthRepoImpl",
+                    "Successfully changed user auth state to 'Authenticated'"
+                )
+                AuthResponse.Success
+            } ?: run {
+                val errorMessage = "User is null after successful sign in"
+                _authState.value = AuthState.Error(message = errorMessage)
+                AuthResponse.Error(message = errorMessage)
             }
+        } catch (e: Exception) {
+            _authState.value = AuthState.Error(
+                message = e.message
+                    ?: "Error occurred during sign up with email. Please try again"
+            )
+            AuthResponse.Error(
+                message = e.message ?: "Error occurred during sign up with email. Please try again"
+            )
         }
-        awaitClose()
     }
 
     override suspend fun signInWithEmail(
         email: String, password: String
-    ): Flow<AuthResponse> = callbackFlow {
+    ): AuthResponse {
         _authState.value = AuthState.Loading
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                auth.currentUser?.let {
-                    _authState.value = AuthState.Authenticated(it.uid)
-                    Log.d("AuthRepoImpl", "Successfully change user auth state to 'Authenticated' ")
-                }
-                trySend(AuthResponse.Success)
-            } else {
-                _authState.value = AuthState.Error(
-                    message = task.exception?.message
-                        ?: "Error occurred during sign in with email. Please try again"
+        return try {
+            auth.signInWithEmailAndPassword(email, password).await()
+            auth.currentUser?.let { user ->
+                saveUser()
+                Log.i(
+                    "AuthRepoImpl",
+                    "Successfully saved user to supabase"
                 )
-                trySend(
-                    AuthResponse.Error(
-                        message = task.exception?.message ?: "Unknown error"
-                    )
+                onboardUser()
+                Log.i(
+                    "AuthRepoImpl",
+                    "Successfully onboarded user with id ${user.uid}"
                 )
+                _authState.value = AuthState.Authenticated(user.uid)
+                Log.i(
+                    "AuthRepoImpl",
+                    "Successfully changed user auth state to 'Authenticated'"
+                )
+                AuthResponse.Success
+            } ?: run {
+                val errorMessage = "User is null after successful sign in"
+                _authState.value = AuthState.Error(message = errorMessage)
+                AuthResponse.Error(message = errorMessage)
             }
+        } catch (e: Exception) {
+            _authState.value = AuthState.Error(
+                message = e.message
+                    ?: "Error occurred during sign in with email. Please try again"
+            )
+            AuthResponse.Error(
+                message = e.message ?: "Error occurred during sign in with email. Please try again"
+            )
         }
-        awaitClose()
     }
 
     override fun getCurrentUserId(): String? {
@@ -211,7 +207,18 @@ class AuthRepositoryImpl(
         }
     }
 
-    override suspend fun onboardUser() {
+
+    private suspend fun saveUser() {
+        auth.currentUser?.let {
+            remoteDataSource.addNewUser(
+                User(
+                    firebaseUserId = it.uid, email = it.email
+                )
+            )
+        }
+    }
+
+    private suspend fun onboardUser() {
         withContext(Dispatchers.IO) {
             val user = auth.currentUser
             user?.let {
@@ -234,9 +241,7 @@ class AuthRepositoryImpl(
                             async {
                                 remoteDataSource.addFolder(
                                     Folder(
-                                        entity.folderId,
-                                        entity.title,
-                                        it.uid
+                                        entity.folderId, entity.title, it.uid
                                     )
                                 )
                             }
@@ -244,11 +249,42 @@ class AuthRepositoryImpl(
                     }
 
                     0 if remoteCount > 0 -> {
-                        val remoteFolders = remoteDataSource.getAllFolders(it.uid)
-                        val entities = remoteFolders.map { folder ->
+                        val remoteFoldersDeferred = async { remoteDataSource.getAllFolders(it.uid) }
+                        val remoteNoteDeferred = async { remoteDataSource.getAllNotes() }
+                        val remoteFlashcardDeferred = async { remoteDataSource.getAllFlashcards() }
+
+                        val remoteFolders = remoteFoldersDeferred.await()
+                        val remoteNote = remoteNoteDeferred.await()
+                        val remoteFlashcard = remoteFlashcardDeferred.await()
+
+
+                        val folderEntities = remoteFolders.map { folder ->
                             FolderEntity(folder.id, folder.userId, folder.title)
                         }
-                        localDataSource.insertAllFolders(entities)
+                        localDataSource.insertAllFolders(folderEntities)
+
+                        if (remoteNote.isNotEmpty()) {
+                            val noteEntities = remoteNote.map { note ->
+                                NoteEntity(
+                                    noteId = note.id,
+                                    title = note.title,
+                                    content = note.content,
+                                    ownerFolderId = note.folderId
+                                )
+                            }
+                            localDataSource.insertAllNotes(noteEntities)
+                        }
+
+                        if (remoteFlashcard.isNotEmpty()) {
+                            val flashcardEntities = remoteFlashcard.map { flashcard ->
+                                FlashcardEntity(
+                                    flashcardId = flashcard.id,
+                                    ownerNoteId = flashcard.ownerNoteId,
+                                    content = flashcard.content
+                                )
+                            }
+                            localDataSource.insertAllFlashcards(flashcardEntities)
+                        }
                     }
                 }
             }
@@ -262,5 +298,5 @@ class AuthRepositoryImpl(
         val digest = md.digest(bytes)
         return digest.fold("") { str, it -> str + "%02x".format(it) }
     }
-
 }
+

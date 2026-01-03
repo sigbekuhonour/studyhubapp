@@ -34,4 +34,7 @@ interface NoteDao {
         title: String?,
         content: String?
     )
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllNotes(noteEntities: List<NoteEntity>)
 }

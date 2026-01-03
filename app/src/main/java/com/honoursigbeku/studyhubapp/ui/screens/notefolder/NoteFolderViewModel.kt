@@ -107,8 +107,6 @@ class NoteFolderViewModel(
         }
     }
 
-
-    // In your Factory, you should be passing in the REPOSITORIES, not the DataSources
     companion object {
         fun Factory(
             authRepository: AuthRepository,
