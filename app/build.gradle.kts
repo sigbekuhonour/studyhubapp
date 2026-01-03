@@ -49,16 +49,6 @@ android {
                 "proguard-rules.pro"
             )
             ndk.debugSymbolLevel = "FULL"
-            buildConfigField(
-                "String",
-                "SUPABASE_URL",
-                "\"https://rxyknyacnoayixkhdpnl.supabase.co\""
-            )
-            buildConfigField(
-                "String",
-                "SUPABASE_KEY",
-                "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ4eWtueWFjbm9heWl4a2hkcG5sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MTUwNjQsImV4cCI6MjA3OTM5MTA2NH0.98cnJFsrrBC7DuQFuI_WeZ-4r8nmHFw3gCana3uzanc\""
-            )
         }
     }
     compileOptions {
