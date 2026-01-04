@@ -1,3 +1,2 @@
 
-To make sure this app runs normally youll need your googleservices.json file which you get from firebase which i excluded from my commits.
-Once thats added everything is pretty much seamless.
+You do not need any additional file to run this application. Its currently a native android application with no IOS support but long term it would be cross platform. To run this app clone the repo and boom you're set to go
