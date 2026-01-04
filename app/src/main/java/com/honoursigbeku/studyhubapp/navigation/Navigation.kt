@@ -10,6 +10,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +26,7 @@ import com.honoursigbeku.studyhubapp.data.repository.AuthRepositoryImpl
 import com.honoursigbeku.studyhubapp.data.repository.FlashcardRepositoryImpl
 import com.honoursigbeku.studyhubapp.data.repository.NoteFolderRepositoryImpl
 import com.honoursigbeku.studyhubapp.data.repository.NoteRepositoryImpl
+import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthViewModel
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.login.LoginScreen
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.sign_up.SignUpScreen
@@ -65,7 +68,27 @@ fun AppNav(modifier: Modifier) {
             remoteDataSource = remoteDataSource
         )
     }
+    val authState by authRepository.authState().collectAsState()
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                Toast.makeText(
+                    context, "Authentication successful", Toast.LENGTH_SHORT
+                ).show()
+                navController.navigate("LandingPage")
+            }
 
+            is AuthState.Loading -> {
+                Toast.makeText(context, "Verifying credentials", Toast.LENGTH_SHORT).show()
+            }
+
+            is AuthState.Unauthenticated -> {}
+            is AuthState.Error -> {
+                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
     NavHost(
         navController = navController,
         startDestination = if (authViewModel.isUserSignedIn()) "landingPage" else "signupPage",
@@ -96,10 +119,12 @@ fun AppNav(modifier: Modifier) {
                 navController = navController,
                 onSignOut = {
                     authViewModel.signOut()
-                    navController.navigate("signupPage") {
-                        popUpTo(0) { inclusive = true }
-                    }
                     Toast.makeText(context, "Sign out successful", Toast.LENGTH_SHORT).show()
+                },
+                onDeleteAccount = {
+                    authViewModel.deleteUserAccount()
+                    Toast.makeText(context, "Account successfully deleted", Toast.LENGTH_SHORT)
+                        .show()
                 })
         }
         composable(

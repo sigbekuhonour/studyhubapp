@@ -274,5 +274,26 @@ class SupabaseRemoteStorageDataSourceImpl(private val client: SupabaseClient) : 
         }
     }
 
+    override suspend fun deleteUserById(userId: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                client.from("User").delete {
+                    filter {
+                        eq("firebaseUserId", userId)
+                    }
+                }
+                Log.i(
+                    "SupabaseRemoteDataSource",
+                    "Successfully deleted user from supabase with id $userId"
+                )
+            } catch (e: Exception) {
+                Log.i(
+                    "SupabaseRemoteDataSource",
+                    "Unable to delete user with id: $userId from client /n $e"
+                )
+            }
+        }
+    }
+
 
 }

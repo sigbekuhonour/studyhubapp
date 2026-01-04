@@ -44,7 +44,7 @@ class NoteFolderViewModel(
 
                 else -> {
                     Log.i("NoteFolderViewModel", "User not authenticated yet.")
-                    flowOf(emptyList()) // Clear folders on sign out
+                    flowOf(emptyList())
                 }
             }
         }

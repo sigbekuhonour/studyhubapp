@@ -1,6 +1,5 @@
 package com.honoursigbeku.studyhubapp.ui.screens.authentication.sign_up
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +14,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,7 +30,6 @@ import com.honoursigbeku.studyhubapp.ui.component.button.CreateAccountButton
 import com.honoursigbeku.studyhubapp.ui.component.button.SignInWithGoogleButton
 import com.honoursigbeku.studyhubapp.ui.component.field.EmailTextField
 import com.honoursigbeku.studyhubapp.ui.component.field.PasswordTextField
-import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthState
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthViewModel
 
 
@@ -50,26 +47,7 @@ fun SignUpScreen(
     val context = LocalContext.current
     val serverClientId = stringResource(R.string.default_web_client_id)
 
-    LaunchedEffect(authState) {
-        when (authState) {
-            is AuthState.Authenticated -> {
-                Toast.makeText(
-                    context, "Authentication successful", Toast.LENGTH_SHORT
-                ).show()
-                navController.navigate("LandingPage")
-            }
 
-            is AuthState.Loading -> {
-                Toast.makeText(context, "Verifying credentials", Toast.LENGTH_SHORT).show()
-            }
-
-            is AuthState.Unauthenticated -> {}
-            is AuthState.Error -> {
-                Toast.makeText(context, (authState as AuthState.Error).message, Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-    }
 
     Scaffold(topBar = {
         TopAppBar(

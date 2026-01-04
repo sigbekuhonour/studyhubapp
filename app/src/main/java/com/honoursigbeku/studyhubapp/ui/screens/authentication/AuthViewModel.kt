@@ -100,6 +100,20 @@ class AuthViewModel(
         }
     }
 
+    fun deleteUserAccount() {
+        viewModelScope.launch {
+            when (authRepository.deleteAccount()) {
+                is AuthResponse.Success -> {
+                    Log.e("AuthViewModel", "Successfully deleted account")
+                }
+
+                is AuthResponse.Error -> {
+                    Log.e("AuthViewModel", "Error occurred during deletion of account ")
+                }
+            }
+        }
+    }
+
     fun signOut() {
         viewModelScope.launch {
             when (authRepository.signOut()) {

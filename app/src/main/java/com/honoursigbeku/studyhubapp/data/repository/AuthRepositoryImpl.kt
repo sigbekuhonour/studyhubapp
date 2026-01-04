@@ -147,6 +147,23 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun deleteAccount(): AuthResponse {
+        return try {
+            val user = auth.currentUser ?: return AuthResponse.Error("No user logged in")
+            user.delete().await()
+            Log.d("AuthRepositoryImpl", "Firebase user account deleted.")
+            remoteDataSource.deleteUserById(user.uid)
+            Log.d("AuthRepositoryImpl", "Supabase user account deleted.")
+            _authState.value = AuthState.Unauthenticated
+            AuthResponse.Success
+        } catch (e: Exception) {
+            _authState.value = AuthState.Error(
+                message = e.message ?: "Error occurred during account deletion. Please try again"
+            )
+            AuthResponse.Error("Account deletion failed: ${e.message}")
+        }
+    }
+
     override suspend fun signInWithEmail(
         email: String, password: String
     ): AuthResponse {

@@ -50,7 +50,10 @@ import com.honoursigbeku.studyhubapp.ui.component.searchbar.SimpleSearchBar
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun NoteFolderDetailScreen(
-    noteFolderViewModel: NoteFolderViewModel, navController: NavController, onSignOut: () -> Unit
+    noteFolderViewModel: NoteFolderViewModel,
+    navController: NavController,
+    onDeleteAccount: () -> Unit,
+    onSignOut: () -> Unit
 ) {
     val lazyColumnState = rememberLazyListState()
     var newFolderButtonIsClicked by rememberSaveable { mutableStateOf(false) }
@@ -74,7 +77,6 @@ fun NoteFolderDetailScreen(
             }
         }
     }
-
 
     Scaffold(topBar = {
         TopAppBar(
@@ -113,6 +115,10 @@ fun NoteFolderDetailScreen(
                         DropdownMenuItem(text = { Text("Sign Out") }, onClick = {
                             isSettingButtonClicked = false
                             onSignOut()
+                        })
+                        DropdownMenuItem(text = { Text("Delete Account") }, onClick = {
+                            isSettingButtonClicked = false
+                            onDeleteAccount()
                         })
                     }
                 }

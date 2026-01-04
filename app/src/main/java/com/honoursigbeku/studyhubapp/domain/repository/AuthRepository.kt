@@ -24,6 +24,8 @@ interface AuthRepository {
         password: String
     ): AuthResponse
 
+    suspend fun deleteAccount(): AuthResponse
+
     suspend fun signOut(): AuthResponse
 
 }

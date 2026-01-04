@@ -26,4 +26,5 @@ interface RemoteDataSource {
     )
 
     suspend fun updateFolderName(folderId: String, newFolderName: String)
+    suspend fun deleteUserById(userId: String)
 }
