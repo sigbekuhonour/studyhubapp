@@ -34,6 +34,7 @@ import com.honoursigbeku.studyhubapp.R
 fun FolderRow(
     icon: Int,
     folderId: String,
+    deletedNotesFolderId: String,
     folderName: String,
     noteFolderContentSize: Int,
     isActionTextClicked: Boolean,
@@ -48,7 +49,7 @@ fun FolderRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clickable(enabled = !isActionTextClicked) {
-                navController.navigate("noteListPage/$folderName/$folderId")
+                navController.navigate("noteListPage/$deletedNotesFolderId/$folderName/$folderId")
             }
 
             .background(color = MaterialTheme.colorScheme.inverseSurface)

@@ -21,7 +21,10 @@ class SupabaseRemoteStorageDataSourceImpl(private val client: SupabaseClient) : 
         try {
             client.from("User").upsert(
                 value = user.toDto()
-            )
+            ) {
+                onConflict = "firebaseUserId"
+                ignoreDuplicates = true
+            }
             Log.i(
                 "SupabaseRemoteDataSource",
                 "Successfully added new user to supabase"

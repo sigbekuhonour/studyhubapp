@@ -50,7 +50,10 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
             val noteId = getNoteId(folderId, title)
             if (noteId == null) {
                 Log.d("NoteViewModel", "Creating new note: $title in folder $folderId")
-                addNotesToFolderWithId(folderId, title)
+                addNotesToFolderWithId(
+                    folderId, title,
+                    content = null
+                )
             } else {
                 Log.d("NoteViewModel", "NoteDto already exists: $noteId")
             }
@@ -65,10 +68,10 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun addNotesToFolderWithId(folderId: String, title: String) {
+    fun addNotesToFolderWithId(folderId: String, title: String, content: String? = "") {
         viewModelScope.launch {
             Log.i("NOTE_ADDED", "ADDED NOTES TO FOLDER ID $folderId")
-            noteRepository.addNoteByFolderId(folderId = folderId, title = title)
+            noteRepository.addNoteByFolderId(folderId = folderId, title = title, content = content)
         }
     }
 

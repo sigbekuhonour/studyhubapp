@@ -23,7 +23,7 @@ class NoteRepositoryImpl(
             .firstOrNull { note -> note.folderId == folderId && note.title == title }?.id
 
 
-    override suspend fun addNoteByFolderId(folderId: String, title: String) {
+    override suspend fun addNoteByFolderId(folderId: String, title: String, content: String?) {
         val noteId = UUID.randomUUID().toString()
         localDataSource.addNote(
             NoteEntity(

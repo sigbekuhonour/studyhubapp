@@ -13,7 +13,9 @@ import androidx.navigation.NavController
 
 @Composable
 fun NoteDisplayCard(
-    notes: List<Note>, folderName: String, viewModel: NoteViewModel, navController: NavController
+    notes: List<Note>,
+    deletedNotesFolderId: String,
+    folderName: String, viewModel: NoteViewModel, navController: NavController
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -23,11 +25,12 @@ fun NoteDisplayCard(
         items(items = notes) { eachNotes ->
             NoteRow(
                 folderName = folderName,
+                deletedNotesFolderId = deletedNotesFolderId,
                 title = eachNotes.title,
                 content = eachNotes.content,
                 folderId = eachNotes.folderId,
                 viewModel = viewModel,
-                navController = navController
+                navController = navController,
             )
         }
     }

@@ -29,6 +29,7 @@ import com.honoursigbeku.studyhubapp.R
 import com.honoursigbeku.studyhubapp.ui.component.button.CreateAccountButton
 import com.honoursigbeku.studyhubapp.ui.component.button.SignInWithGoogleButton
 import com.honoursigbeku.studyhubapp.ui.component.field.EmailTextField
+import com.honoursigbeku.studyhubapp.ui.component.field.PasswordRequirementField
 import com.honoursigbeku.studyhubapp.ui.component.field.PasswordTextField
 import com.honoursigbeku.studyhubapp.ui.screens.authentication.AuthViewModel
 
@@ -72,6 +73,7 @@ fun SignUpScreen(
             PasswordTextField(title = password) {
                 password = it
             }
+            PasswordRequirementField(password = password)
             CreateAccountButton(
                 buttonText = "Create account", authState = authState, onClick = {
                     viewModel.signUpWithEmail(email, password)

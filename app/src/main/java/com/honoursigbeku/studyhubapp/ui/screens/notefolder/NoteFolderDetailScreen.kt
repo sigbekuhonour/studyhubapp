@@ -140,7 +140,7 @@ fun NoteFolderDetailScreen(
                         navController.navigate(
                             "notePage/${"Quick Notes"}/${
                                 folders.firstOrNull { it.title == "Quick Notes" }?.id
-                            }/New_Note"
+                            }/Title"
                         )
                     })
             })
@@ -201,6 +201,7 @@ fun NoteFolderDetailScreen(
                     )
                     FolderRow(
                         folderId = eachFolder.id,
+                        deletedNotesFolderId = folders.first { folders -> folders.title == "Deleted Notes" }.id,
                         icon = eachFolder.icon,
                         folderName = eachFolder.title,
                         noteFolderContentSize = noOfContents,

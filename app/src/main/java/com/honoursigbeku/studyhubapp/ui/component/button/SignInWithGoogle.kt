@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,16 +29,23 @@ fun SignInWithGoogleButton(
     text: String,
     onClick: () -> Unit,
 ) {
-    var signInWithGoogleButtonText by rememberSaveable { mutableStateOf(text) }
+    val isLoading = authState is AuthState.Loading
+    var isSignInWithGoogleButtonClicked by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(authState) {
         if (authState is AuthState.Authenticated || authState is AuthState.Error) {
-            signInWithGoogleButtonText = text
+            isSignInWithGoogleButtonClicked = false
         }
     }
-    Button(onClick = {
-        signInWithGoogleButtonText = "Signing you in"
-        onClick()
-    }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.inverseSurface)) {
+    Button(
+        enabled = !isLoading,
+        onClick = {
+            onClick()
+            isSignInWithGoogleButtonClicked = true
+        }, colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.inverseSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
+    ) {
         Icon(
             painter = painterResource(R.drawable.google_icon),
             modifier = Modifier.size(20.dp),
@@ -50,8 +58,11 @@ fun SignInWithGoogleButton(
             )
         )
         Text(
-            text = signInWithGoogleButtonText,
+            text = if (isLoading) "Signing you in " else text,
             style = MaterialTheme.typography.titleMedium
         )
+        if (isSignInWithGoogleButtonClicked) {
+            CircularProgressIndicator(modifier = Modifier.size(15.dp))
+        }
     }
 }

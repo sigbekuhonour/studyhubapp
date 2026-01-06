@@ -20,9 +20,9 @@ android {
 
     defaultConfig {
         applicationId = "com.honoursigbeku.studyhubapp"
-        minSdk = 34
+        minSdk = 31
         targetSdk = 36
-        versionCode = 4
+        versionCode = 7
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

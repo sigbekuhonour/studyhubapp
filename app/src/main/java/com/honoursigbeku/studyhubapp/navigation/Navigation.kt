@@ -128,7 +128,7 @@ fun AppNav(modifier: Modifier) {
                 })
         }
         composable(
-            route = "noteListPage/{folderName}/{folderId}",
+            route = "noteListPage/{deletedNotesFolderId}/{folderName}/{folderId}",
             enterTransition = { slideInVertically() },
         ) { navBackStackEntry ->
             val noteViewModel: NoteViewModel = viewModel(
@@ -138,13 +138,18 @@ fun AppNav(modifier: Modifier) {
             )
             val folderName = navBackStackEntry.arguments?.getString("folderName")
             val folderId = navBackStackEntry.arguments?.getString("folderId")
+            val deletedNotesFolderId =
+                navBackStackEntry.arguments?.getString("deletedNotesFolderId")
             if (folderName != null) {
-                NoteListDetailScreen(
-                    folderName = folderName,
-                    folderId = folderId,
-                    viewModel = noteViewModel,
-                    navController = navController
-                )
+                deletedNotesFolderId?.let {
+                    NoteListDetailScreen(
+                        folderName = folderName,
+                        deletedNotesFolderId = it,
+                        folderId = folderId,
+                        viewModel = noteViewModel,
+                        navController = navController
+                    )
+                }
             }
         }
         composable(

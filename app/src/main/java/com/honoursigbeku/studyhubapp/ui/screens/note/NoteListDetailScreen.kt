@@ -33,7 +33,9 @@ import com.honoursigbeku.studyhubapp.ui.component.searchbar.SimpleSearchBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteListDetailScreen(
-    folderName: String, folderId: String?, viewModel: NoteViewModel, navController: NavController
+    folderName: String,
+    deletedNotesFolderId: String,
+    folderId: String?, viewModel: NoteViewModel, navController: NavController
 ) {
 
     val textFieldState = rememberTextFieldState()
@@ -134,6 +136,7 @@ fun NoteListDetailScreen(
             Spacer(modifier = Modifier.padding(vertical = 20.dp))
             NoteDisplayCard(
                 folderName = folderName,
+                deletedNotesFolderId = deletedNotesFolderId,
                 notes = notes.filter { note -> note.folderId == folderId },
                 viewModel = viewModel,
                 navController = navController

@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:951689877010:android:78d41eb7f7cf0abe346acb",
         "android_client_info": {
-          "package_name": "com.honoursigbeku.studyhubapp"
+          "package_name": "com.example.studyhubapp"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "951689877010-2aj2fl1v4cerqb1ollaqlk1m5kr2j8fp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.honoursigbeku.studyhubapp",
+            "package_name": "com.example.studyhubapp",
             "certificate_hash": "3e880b62ff86bdd86f162f2f06f9ad62e6591b3f"
           }
         },
@@ -25,10 +25,39 @@
           "client_id": "951689877010-rfnco2vrdolo7sm0eiq076es3h1aksq2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.honoursigbeku.studyhubapp",
+            "package_name": "com.example.studyhubapp",
             "certificate_hash": "3964a49de47e0eb843e8f5d05c98b507189c4b1d"
           }
         },
+        {
+          "client_id": "951689877010-epbm78i0ei62ka07vmu138d1jc7u04ue.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_1dfGoFvyKMIwKt7PUqpxv5tLPg1FQRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "951689877010-epbm78i0ei62ka07vmu138d1jc7u04ue.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:951689877010:android:c980e5aca50f2969346acb",
+        "android_client_info": {
+          "package_name": "com.honoursigbeku.studyhubapp"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "951689877010-epbm78i0ei62ka07vmu138d1jc7u04ue.apps.googleusercontent.com",
           "client_type": 3

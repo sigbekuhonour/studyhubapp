@@ -5,6 +5,9 @@ import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.Firebase
@@ -56,56 +59,81 @@ class AuthRepositoryImpl(
         }
     }
 
-
     override suspend fun signInWithGoogle(
         context: Context,
         serverClientId: String,
     ): AuthResponse {
-        val googleIdOption = GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(false)
-            .setServerClientId(serverClientId).setAutoSelectEnabled(false).setNonce(createNonce())
-            .build()
-        val request = GetCredentialRequest.Builder().addCredentialOption(googleIdOption).build()
-        val credentialManager = CredentialManager.create(context)
-        val result = credentialManager.getCredential(context = context, request = request)
-        val credential = result.credential
         _authState.value = AuthState.Loading
-        if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            val firebaseCredential = GoogleAuthProvider.getCredential(
-                googleIdTokenCredential.idToken, null
+
+        try {
+            val googleIdOption = GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(false)
+                .setServerClientId(serverClientId)
+                .setAutoSelectEnabled(false)
+                .setNonce(createNonce())
+                .build()
+
+            val request = GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
+
+            val credentialManager = CredentialManager.create(context)
+
+            val result = credentialManager.getCredential(
+                context = context,
+                request = request
             )
-            return try {
+            val credential = result.credential
+
+            if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+
+                val firebaseCredential = GoogleAuthProvider.getCredential(
+                    googleIdTokenCredential.idToken,
+                    null
+                )
+
                 auth.signInWithCredential(firebaseCredential).await()
-                auth.currentUser?.let { user ->
+
+                return auth.currentUser?.let { user ->
                     saveUser()
-                    Log.i(
-                        "AuthRepoImpl",
-                        "Successfully saved user to supabase"
-                    )
+                    Log.i("AuthRepoImpl", "Successfully saved user to supabase")
+
                     onboardUser()
-                    Log.i(
-                        "AuthRepoImpl",
-                        "Successfully onboarded user with id ${user.uid}"
-                    )
+                    Log.i("AuthRepoImpl", "Successfully onboarded user ${user.uid}")
+
                     _authState.value = AuthState.Authenticated(user.uid)
-                    Log.i(
-                        "AuthRepoImpl",
-                        "Successfully changed user auth state to 'Authenticated'"
-                    )
                     AuthResponse.Success
                 } ?: run {
-                    val errorMessage = "User is null after successful sign in"
-                    _authState.value = AuthState.Error(message = errorMessage)
-                    AuthResponse.Error(message = errorMessage)
+                    val msg = "User is null after successful sign in"
+                    _authState.value = AuthState.Error(msg)
+                    AuthResponse.Error(msg)
                 }
-            } catch (e: Exception) {
-                val errorMessage =
-                    e.message ?: "An error occurred while attempting to sign in with Google."
-                _authState.value = AuthState.Error(message = errorMessage)
-                AuthResponse.Error(message = errorMessage)
+            } else {
+                val msg = "Unexpected credential type received."
+                _authState.value = AuthState.Error(msg)
+                return AuthResponse.Error(msg)
             }
+
+        } catch (e: GetCredentialException) {
+            val errorMessage = if (e is NoCredentialException) {
+                "No Google account found on this device."
+            } else if (e is GetCredentialCancellationException) {
+                "Sign in cancelled."
+            } else {
+                "Sign in failed: ${e.message}"
+            }
+
+            Log.e("AuthRepoImpl", "Credential Manager Error", e)
+            _authState.value = AuthState.Error(errorMessage)
+            return AuthResponse.Error(errorMessage)
+
+        } catch (e: Exception) {
+            val errorMessage = e.localizedMessage ?: "An unknown error occurred."
+            Log.e("AuthRepoImpl", "Generic Sign In Error", e)
+            _authState.value = AuthState.Error(errorMessage)
+            return AuthResponse.Error(errorMessage)
         }
-        return AuthResponse.Error(message = "You do not have any google account to sign in with currently. Please add a google account and try again!")
     }
 
     override suspend fun signUpWithEmail(
@@ -113,7 +141,10 @@ class AuthRepositoryImpl(
     ): AuthResponse {
         _authState.value = AuthState.Loading
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
+            if (email.trim().isBlank() || password.trim().isBlank()) {
+                throw Exception("Email or password fields cannot be empty.")
+            }
+            auth.createUserWithEmailAndPassword(email.trim(), password.trim()).await()
             auth.currentUser?.let { user ->
                 saveUser()
                 Log.i(
@@ -138,7 +169,7 @@ class AuthRepositoryImpl(
             }
         } catch (e: Exception) {
             _authState.value = AuthState.Error(
-                message = e.message
+                message = e.localizedMessage
                     ?: "Error occurred during sign up with email. Please try again"
             )
             AuthResponse.Error(
@@ -168,8 +199,12 @@ class AuthRepositoryImpl(
         email: String, password: String
     ): AuthResponse {
         _authState.value = AuthState.Loading
+
         return try {
-            auth.signInWithEmailAndPassword(email, password).await()
+            if (email.trim().isBlank() || password.trim().isBlank()) {
+                throw Exception("Email or password fields cannot be empty.")
+            }
+            auth.signInWithEmailAndPassword(email.trim(), password.trim()).await()
             auth.currentUser?.let { user ->
                 saveUser()
                 Log.i(

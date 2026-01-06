@@ -25,24 +25,31 @@ fun CreateAccountButton(
     buttonText: String,
     onClick: () -> Unit,
 ) {
-    var createButtonText by rememberSaveable { mutableStateOf(buttonText) }
+
+    var isCreateButtonClicked by rememberSaveable { mutableStateOf(false) }
+    val isLoading = authState is AuthState.Loading
     LaunchedEffect(authState) {
         if (authState is AuthState.Authenticated || authState is AuthState.Error) {
-            createButtonText = buttonText
+            isCreateButtonClicked = false
         }
     }
     Button(
+        enabled = !isLoading,
         onClick = {
-            createButtonText = "Signing you in"
             onClick()
+            isCreateButtonClicked = true
         },
-        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.inverseSurface)
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.inverseSurface,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         Text(
-            text = createButtonText, style = MaterialTheme.typography.titleMedium
+            text = if (isLoading) "Signing you in " else buttonText,
+            style = MaterialTheme.typography.titleMedium
         )
         Spacer(modifier = Modifier.padding(5.dp))
-        if (authState is AuthState.Loading) {
+        if (isCreateButtonClicked) {
             CircularProgressIndicator(modifier = Modifier.size(15.dp))
         }
     }

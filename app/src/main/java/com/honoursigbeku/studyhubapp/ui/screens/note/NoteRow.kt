@@ -29,6 +29,7 @@ fun NoteRow(
     folderName: String,
     content: String?,
     folderId: String,
+    deletedNotesFolderId: String,
     viewModel: NoteViewModel,
     navController: NavController
 ) {
@@ -79,6 +80,13 @@ fun NoteRow(
                                     "NoteViewModel",
                                     "deleted Notes with: folderId=$folderId, noteId=$it"
                                 )
+                                if (folderName != "Deleted Notes") {
+                                    viewModel.addNotesToFolderWithId(
+                                        folderId = deletedNotesFolderId,
+                                        title = title,
+                                        content = content
+                                    )
+                                }
                                 viewModel.deleteNotesInFolderWithId(
                                     folderId = folderId, noteId = it
                                 )
